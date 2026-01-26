@@ -13,11 +13,10 @@ BOOST_CI_SRC_FOLDER=$(pwd)
 
 cd ../boost-root
 
-# To copy files to the main Windows disk:
-mkdir -p /mnt/c/output
-
 outputlocation="$BOOST_CI_SRC_FOLDER/gcovr"
 outputlocation="/mnt/c/output"
-rm -rf "$outputlocation/*"
+rm -rf $outputlocation || true
+
+mkdir -p $outputlocation
 
 gcovr --merge-mode-functions separate -p --html-nested --html-template-dir=..\templates --exclude-unreachable-branches --exclude-throw-branches --exclude '.*/test/.*' --exclude '.*/extra/.*' --filter "$GCOVRFILTER" --html --output "$outputlocation/index.html"
