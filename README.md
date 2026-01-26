@@ -45,13 +45,13 @@ Run this each time:
 ./build.sh
 ```
 
-Files will be output in `json/gcovr/`, or that can be modified in `build.sh`. Run `build.sh` each time after modifying the templates.  
+Files will be output to `/opt/github/cppalliance/json/gcovr/`, or the location can be modified in `build.sh`. Run `build.sh` each time after modifying the templates.  
 
 ### WSL Notes
 
 Use Ubuntu 24.04: `wsl --install Ubuntu-24.04`
 
-Modify build.sh to send files to /mnt/c/output where they can be easily viewed from the system's main browser.
+Modify build.sh to send files to `/mnt/c/output/` where they can be easily viewed from the system's main browser.
 
 ### Administrator Notes
 
@@ -72,6 +72,6 @@ When adding and pushing contents to github try:
 git config --global http.postBuffer 157286400
 ```
 
-The entire contents of this repo can basically be recreated by going into the json directory `cd json` and running the script https://github.com/cppalliance/ci-automation/blob/master/scripts/lcov-jenkins-gcc-13.sh 
+The entire contents of this repo can be recreated by going into the json directory `cd json` and running the script https://github.com/cppalliance/ci-automation/blob/master/scripts/lcov-jenkins-gcc-13.sh 
 
 
