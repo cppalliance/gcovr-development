@@ -45,13 +45,13 @@ Run this each time:
 ./build.sh
 ```
 
-Files will be output to `/opt/github/cppalliance/json/gcovr/`, or the location can be modified in `build.sh`. Run `build.sh` each time after modifying the templates.  
+Files will be output to the directory specified in build.sh, usually either `/opt/github/cppalliance/json/gcovr/` or `/mnt/c/output`. Since the first iteration of the script is aimed at WSL, the output is set to `/mnt/c/output` which is `C:\output`.  
+
+ Run `build.sh` each time after modifying the templates.  
 
 ### WSL Notes
 
 Use Ubuntu 24.04: `wsl --install Ubuntu-24.04`
-
-Modify build.sh to send files to `/mnt/c/output/` where they can be easily viewed from the system's main browser.
 
 ### Administrator Notes
 
