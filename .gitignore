@@ -1,0 +1,10 @@
+# Generated coverage reports
+# json/gcovr/
+# json/gcovr-lcov/
+# json/gcovr-output/
+
+# Claude Code
+.claude/
+
+# Temp files
+*.bak
