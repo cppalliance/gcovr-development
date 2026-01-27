@@ -1,0 +1,4030 @@
+<!DOCTYPE html>
+<html class="theme-green">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>detail/charconv/detail/integer_search_trees.hpp - GCC Code Coverage Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style type="text/css">
+/* ===========================================
+   GCOVR Custom Dark Theme with Sidebar
+   =========================================== */
+
+@charset "utf-8";
+
+:root {
+  /* Dark theme colors */
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --bg-hover: #30363d;
+  --bg-active: #388bfd26;
+
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+
+  --border-color: #30363d;
+  --border-muted: #21262d;
+
+  /* Accent colors */
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-yellow: #d29922;
+  --accent-red: #f85149;
+  --accent-purple: #a371f7;
+
+  /* Coverage colors */
+  --coverage-high: #3fb950;
+  --coverage-high-bg: rgba(63, 185, 80, 0.15);
+  --coverage-medium: #d29922;
+  --coverage-medium-bg: rgba(210, 153, 34, 0.15);
+  --coverage-low: #f85149;
+  --coverage-low-bg: rgba(248, 81, 73, 0.15);
+  --coverage-unknown: #6e7681;
+
+  /* Spacing */
+  --sidebar-width: 280px;
+  --header-height: 56px;
+
+  /* Fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+/* Light Mode */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #eaeef2;
+  --bg-hover: #d0d7de;
+  --bg-active: rgba(84, 174, 255, 0.15);
+
+  --text-primary: #1f2328;
+  --text-secondary: #656d76;
+  --text-muted: #8c959f;
+
+  --border-color: #d0d7de;
+  --border-muted: #eaeef2;
+
+  --accent-blue: #0969da;
+  --accent-green: #1a7f37;
+  --accent-yellow: #9a6700;
+  --accent-red: #cf222e;
+  --accent-purple: #8250df;
+
+  --coverage-high: #1a7f37;
+  --coverage-high-bg: rgba(26, 127, 55, 0.15);
+  --coverage-medium: #9a6700;
+  --coverage-medium-bg: rgba(154, 103, 0, 0.15);
+  --coverage-low: #cf222e;
+  --coverage-low-bg: rgba(207, 34, 46, 0.15);
+}
+
+/* Smooth theme transitions */
+body, .sidebar, .main-content, .main-header, .main-footer,
+.sidebar-header, .sidebar-nav, .sidebar-footer,
+.summary-card, .file-list-container, .source-container,
+.tree-item-header, .coverage-badge, .tree-coverage,
+.btn, .nav-link, input {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+/* Coverage class colors */
+.coverage-high { color: var(--coverage-high) !important; }
+.coverage-medium { color: var(--coverage-medium) !important; }
+.coverage-low, .coverage-none { color: var(--coverage-low) !important; }
+.coverage-unknown { color: var(--coverage-unknown) !important; }
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: #79c0ff;
+  text-decoration: underline;
+}
+
+/* ===========================================
+   App Layout
+   =========================================== */
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===========================================
+   Sidebar
+   =========================================== */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform var(--transition-normal);
+}
+
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sidebar-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.sidebar-title-link:hover {
+  color: var(--accent-blue);
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+.theme-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+.sidebar-search {
+  position: relative;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.sidebar-search input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+}
+
+.sidebar-search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Tree Controls */
+.tree-controls {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tree-control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tree-control-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tree-control-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.coverage-summary-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coverage-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.coverage-badge.coverage-high {
+  background: var(--coverage-high-bg);
+}
+
+.coverage-badge.coverage-medium {
+  background: var(--coverage-medium-bg);
+}
+
+.coverage-badge.coverage-low {
+  background: var(--coverage-low-bg);
+}
+
+.coverage-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Tree View */
+.tree-loading {
+  padding: 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.tree-item {
+  user-select: none;
+}
+
+.tree-item-header {
+  display: flex;
+  align-items: center;
+  padding: 2px 12px 2px 8px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  gap: 4px;
+  /* Extend background full width */
+  margin-left: -200px;
+  padding-left: 208px;
+  margin-right: -12px;
+  padding-right: 24px;
+}
+
+.tree-item-header:hover {
+  background: var(--bg-hover);
+}
+
+.tree-item-header.active,
+.tree-item.active > .tree-item-header {
+  background: var(--bg-active);
+}
+
+.tree-item.active > .tree-item-header .tree-label {
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+
+/* Folder toggle button (+/-) - minimal style */
+.tree-folder-toggle {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 400;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  text-decoration: none;
+  line-height: 1;
+  margin-right: 2px;
+  padding: 0;
+}
+
+.tree-folder-toggle:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+/* Spacer for files (no toggle) */
+.tree-spacer {
+  width: 20px;
+  flex-shrink: 0;
+}
+
+/* Legacy toggle classes */
+.tree-toggle {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.tree-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.tree-toggle .toggle-icon {
+  display: block;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tree-toggle-spacer {
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.tree-item.no-children .tree-toggle {
+  visibility: hidden;
+}
+
+.tree-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tree-icon-folder {
+  color: var(--accent-blue);
+}
+
+.tree-icon-file {
+  color: var(--text-muted);
+}
+
+/* Legacy classes */
+.tree-icon.folder {
+  color: var(--accent-blue);
+}
+
+.tree-icon.file {
+  color: var(--text-secondary);
+}
+
+.tree-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.tree-coverage {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.tree-coverage.coverage-high {
+  background: var(--coverage-high-bg);
+}
+
+.tree-coverage.coverage-medium {
+  background: var(--coverage-medium-bg);
+}
+
+.tree-coverage.coverage-low {
+  background: var(--coverage-low-bg);
+}
+
+.tree-children {
+  display: none;
+  margin-left: 20px;
+  position: relative;
+}
+
+.tree-item.expanded > .tree-children {
+  display: block;
+}
+
+.tree-children-inner {
+  /* Animation support */
+}
+
+
+/* ===========================================
+   Main Content
+   =========================================== */
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left var(--transition-normal);
+}
+
+.sidebar.collapsed + .main-content {
+  margin-left: 0;
+}
+
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+}
+
+.sidebar-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.sidebar-toggle:hover {
+  background: var(--bg-hover);
+}
+
+.sidebar-toggle span {
+  display: block;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 1px;
+  transition: background var(--transition-fast);
+}
+
+.sidebar-toggle:hover span {
+  background: var(--text-primary);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  font-size: 14px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.breadcrumb a,
+.breadcrumb span {
+  display: inline;
+  white-space: nowrap;
+}
+
+.breadcrumb a {
+  color: var(--text-secondary);
+}
+
+.breadcrumb a:hover {
+  color: var(--accent-blue);
+}
+
+.breadcrumb .separator {
+  color: var(--text-muted);
+  padding: 0 6px;
+}
+
+.breadcrumb .current {
+  color: var(--text-primary);
+}
+
+.header-actions {
+  margin-left: auto;
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: 24px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.main-footer {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.main-footer a {
+  color: var(--text-muted);
+}
+
+/* ===========================================
+   Summary Cards
+   =========================================== */
+
+.summary-section {
+  margin-bottom: 24px;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.summary-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.summary-card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.summary-card-header h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-card-body {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.coverage-ring {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.coverage-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.coverage-ring .ring-bg {
+  fill: none;
+  stroke: var(--bg-tertiary);
+  stroke-width: 3;
+}
+
+.coverage-ring .ring-fill {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--transition-normal);
+}
+
+.coverage-ring.coverage-high .ring-fill { stroke: var(--coverage-high); }
+.coverage-ring.coverage-medium .ring-fill { stroke: var(--coverage-medium); }
+.coverage-ring.coverage-low .ring-fill { stroke: var(--coverage-low); }
+
+.coverage-ring .ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.summary-stats {
+  flex: 1;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.stat-row .stat-label {
+  color: var(--text-secondary);
+}
+
+.stat-row .stat-value {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.coverage-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.legend-item.coverage-high {
+  background: var(--coverage-high-bg);
+  color: var(--coverage-high);
+}
+
+.legend-item.coverage-medium {
+  background: var(--coverage-medium-bg);
+  color: var(--coverage-medium);
+}
+
+.legend-item.coverage-low {
+  background: var(--coverage-low-bg);
+  color: var(--coverage-low);
+}
+
+/* ===========================================
+   File List
+   =========================================== */
+
+.file-list-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.file-list-header {
+  display: grid;
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px 100px;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.file-list-header > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-list-header .sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.file-list-header .sortable:hover {
+  color: var(--text-primary);
+}
+
+.file-list-header .sorted-ascending::after {
+  content: ' ↑';
+}
+
+.file-list-header .sorted-descending::after {
+  content: ' ↓';
+}
+
+.file-row {
+  display: grid;
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px 100px;
+  gap: 8px;
+  padding: 4px 16px;
+  border-bottom: 1px solid var(--border-muted);
+  align-items: center;
+  transition: background var(--transition-fast);
+}
+
+.file-row:last-child {
+  border-bottom: none;
+}
+
+.file-row:hover {
+  background: var(--bg-hover);
+}
+
+/* Adjust grid when columns are hidden */
+.no-functions.no-branches .file-list-header,
+.no-functions.no-branches .file-row {
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px;
+}
+
+.no-functions:not(.no-branches) .file-list-header,
+.no-functions:not(.no-branches) .file-row {
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px;
+}
+
+.no-branches:not(.no-functions) .file-list-header,
+.no-branches:not(.no-functions) .file-row {
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px;
+}
+
+.file-row:nth-child(even) {
+  background: rgba(56, 139, 253, 0.03);
+}
+
+.file-row:nth-child(even):hover {
+  background: var(--bg-hover);
+}
+
+.col-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.file-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.file-icon svg {
+  display: block;
+}
+
+.file-row.directory .file-icon {
+  color: var(--accent-blue);
+}
+
+.col-name a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col-name .no-link {
+  color: var(--text-secondary);
+}
+
+.col-coverage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coverage-bar-container {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.coverage-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width var(--transition-normal);
+}
+
+.coverage-bar.coverage-high { background: var(--coverage-high); }
+.coverage-bar.coverage-medium { background: var(--coverage-medium); }
+.coverage-bar.coverage-low { background: var(--coverage-low); }
+
+.coverage-percent {
+  font-weight: 600;
+  font-size: 13px;
+  min-width: 48px;
+  text-align: right;
+}
+
+.col-lines, .col-functions, .col-branches {
+  text-align: right;
+  font-size: 13px;
+}
+
+.stat-value {
+  font-weight: 500;
+}
+
+.stat-separator {
+  color: var(--text-muted);
+  margin: 0 2px;
+}
+
+.stat-total {
+  color: var(--text-secondary);
+}
+
+/* ===========================================
+   Source Code View
+   =========================================== */
+
+.source-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.source-info h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.source-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.source-stats .stat {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.source-stats .stat strong {
+  margin-right: 4px;
+}
+
+.source-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.btn.btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn-count {
+  font-weight: 600;
+}
+
+.btn-toggle {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.btn-toggle.show_coveredLine,
+.btn-toggle.show_uncoveredLine,
+.btn-toggle.show_partialCoveredLine,
+.btn-toggle.show_excludedLine {
+  text-decoration: none;
+  opacity: 1;
+}
+
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.color-dot.covered { background: var(--coverage-high); }
+.color-dot.uncovered { background: var(--coverage-low); }
+
+.source-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.source-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.source-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.source-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.source-table-container {
+  overflow-x: auto;
+}
+
+.source-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.source-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.source-table th {
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.source-table th.col-lineno,
+.source-table th.col-count,
+.source-table th.col-branch {
+  text-align: right;
+}
+
+.source-table td {
+  padding: 0 12px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.source-table .col-lineno {
+  background: var(--bg-tertiary);
+  border-right: 1px solid var(--border-color);
+  text-align: right;
+  user-select: none;
+  width: 60px;
+}
+
+.source-table .col-lineno a {
+  color: var(--text-muted);
+  text-decoration: none;
+  display: block;
+  padding: 2px 0;
+}
+
+.source-table .col-lineno a:hover {
+  color: var(--accent-blue);
+}
+
+.source-table .col-branch,
+.source-table .col-condition,
+.source-table .col-decision,
+.source-table .col-call {
+  background: var(--bg-tertiary);
+  border-right: 1px solid var(--border-color);
+  text-align: center;
+  width: 60px;
+}
+
+.source-table .col-count {
+  text-align: right;
+  width: 60px;
+  color: var(--text-muted);
+}
+
+.source-table .col-source {
+  white-space: pre;
+  padding-left: 16px;
+}
+
+/* Line coverage highlighting */
+.source-line.coveredLine.show_coveredLine td.col-source,
+.source-line.coveredLine.show_coveredLine td.col-count {
+  background: var(--coverage-high-bg);
+}
+
+.source-line.uncoveredLine.show_uncoveredLine td.col-source,
+.source-line.uncoveredLine.show_uncoveredLine td.col-count {
+  background: var(--coverage-low-bg);
+}
+
+.source-line.partialCoveredLine.show_partialCoveredLine td.col-source,
+.source-line.partialCoveredLine.show_partialCoveredLine td.col-count {
+  background: var(--coverage-medium-bg);
+}
+
+.source-line.excludedLine.show_excludedLine td.col-source,
+.source-line.excludedLine.show_excludedLine td.col-count {
+  background: rgba(110, 118, 129, 0.15);
+}
+
+.hit-miss {
+  color: var(--coverage-low);
+  font-weight: bold;
+}
+
+.hit-excluded {
+  color: var(--text-muted);
+}
+
+/* Branch/condition popup */
+.branch-details, .condition-details, .decision-details, .call-details {
+  position: relative;
+}
+
+.branch-summary, .condition-summary, .decision-summary, .call-summary {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+}
+
+.branch-summary:hover, .condition-summary:hover, .decision-summary:hover, .call-summary:hover {
+  background: var(--bg-hover);
+}
+
+.branch-popup, .condition-popup, .decision-popup, .call-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  min-width: 250px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.function-name {
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin-bottom: 4px;
+}
+
+.branch-taken, .condition-covered, .decision-taken, .call-invoked {
+  color: var(--coverage-high);
+}
+
+.branch-not-taken, .condition-not-covered, .decision-not-taken, .call-not-invoked {
+  color: var(--coverage-low);
+}
+
+.branch-excluded, .condition-excluded, .decision-uncheckable, .call-excluded {
+  color: var(--text-muted);
+}
+
+/* ===========================================
+   Navigation
+   =========================================== */
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 13px;
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.nav-link svg {
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   Functions Page
+   =========================================== */
+
+.summary-inline {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+
+.summary-inline .summary-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-inline .stat-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.summary-inline .stat-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.summary-inline .stat-detail {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.functions-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.functions-header {
+  display: grid;
+  grid-template-columns: 2fr 120px 80px 80px;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.function-row {
+  display: grid;
+  grid-template-columns: 2fr 120px 80px 80px;
+  gap: 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-muted);
+  align-items: center;
+  transition: background var(--transition-fast);
+}
+
+.function-row:hover {
+  background: var(--bg-hover);
+}
+
+.function-row .col-function a {
+  display: block;
+}
+
+.function-name {
+  font-weight: 500;
+  display: block;
+}
+
+.function-location {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.function-row .excluded {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.function-row .not-called {
+  color: var(--coverage-low);
+}
+
+.function-row .called {
+  color: var(--coverage-high);
+  font-weight: 500;
+}
+
+/* ===========================================
+   Responsive
+   =========================================== */
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .file-list-header,
+  .file-row {
+    grid-template-columns: 1fr 120px 80px;
+  }
+
+  .col-functions,
+  .col-branches {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 16px;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .file-list-header,
+  .file-row {
+    grid-template-columns: 1fr 100px;
+  }
+
+  .col-lines {
+    display: none;
+  }
+
+  .source-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ===========================================
+   Syntax Highlighting (Dark Theme)
+   =========================================== */
+
+/* Dark theme syntax highlighting */
+.c { color: #8b949e; font-style: italic; } /* Comment */
+.k { color: #ff7b72; font-weight: bold; } /* Keyword */
+.o { color: #79c0ff; } /* Operator */
+.cm { color: #8b949e; font-style: italic; } /* Comment.Multiline */
+.cp { color: #d29922; } /* Comment.Preproc */
+.c1 { color: #8b949e; font-style: italic; } /* Comment.Single */
+.cs { color: #8b949e; font-weight: bold; } /* Comment.Special */
+.gd { color: #f85149; } /* Generic.Deleted */
+.gi { color: #3fb950; } /* Generic.Inserted */
+.kc { color: #79c0ff; } /* Keyword.Constant */
+.kd { color: #ff7b72; } /* Keyword.Declaration */
+.kn { color: #ff7b72; } /* Keyword.Namespace */
+.kt { color: #ffa657; } /* Keyword.Type */
+.m { color: #a5d6ff; } /* Literal.Number */
+.s { color: #a5d6ff; } /* Literal.String */
+.na { color: #79c0ff; } /* Name.Attribute */
+.nb { color: #ffa657; } /* Name.Builtin */
+.nc { color: #ffa657; font-weight: bold; } /* Name.Class */
+.nf { color: #d2a8ff; } /* Name.Function */
+.nn { color: #ffa657; } /* Name.Namespace */
+.nt { color: #7ee787; } /* Name.Tag */
+.nv { color: #79c0ff; } /* Name.Variable */
+.ow { color: #ff7b72; font-weight: bold; } /* Operator.Word */
+.s1 { color: #a5d6ff; } /* Literal.String.Single */
+.s2 { color: #a5d6ff; } /* Literal.String.Double */
+
+/* Light theme syntax highlighting */
+[data-theme="light"] .c { color: #6e7781; }
+[data-theme="light"] .k { color: #cf222e; }
+[data-theme="light"] .o { color: #0550ae; }
+[data-theme="light"] .cm { color: #6e7781; }
+[data-theme="light"] .cp { color: #9a6700; }
+[data-theme="light"] .c1 { color: #6e7781; }
+[data-theme="light"] .cs { color: #6e7781; }
+[data-theme="light"] .gd { color: #cf222e; }
+[data-theme="light"] .gi { color: #1a7f37; }
+[data-theme="light"] .kc { color: #0550ae; }
+[data-theme="light"] .kd { color: #cf222e; }
+[data-theme="light"] .kn { color: #cf222e; }
+[data-theme="light"] .kt { color: #953800; }
+[data-theme="light"] .m { color: #0550ae; }
+[data-theme="light"] .s { color: #0a3069; }
+[data-theme="light"] .na { color: #0550ae; }
+[data-theme="light"] .nb { color: #953800; }
+[data-theme="light"] .nc { color: #953800; }
+[data-theme="light"] .nf { color: #8250df; }
+[data-theme="light"] .nn { color: #953800; }
+[data-theme="light"] .nt { color: #1a7f37; }
+[data-theme="light"] .nv { color: #0550ae; }
+[data-theme="light"] .ow { color: #cf222e; }
+[data-theme="light"] .s1 { color: #0a3069; }
+[data-theme="light"] .s2 { color: #0a3069; }
+
+/* ===========================================
+   Scrollbar
+   =========================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-hover);
+}
+
+/* Button toggle classes for gcovr compatibility */
+.button_toggle_coveredLine,
+.button_toggle_uncoveredLine,
+.button_toggle_partialCoveredLine,
+.button_toggle_excludedLine {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.button_toggle_coveredLine.show_coveredLine,
+.button_toggle_uncoveredLine.show_uncoveredLine,
+.button_toggle_partialCoveredLine.show_partialCoveredLine,
+.button_toggle_excludedLine.show_excludedLine {
+  text-decoration: none;
+  opacity: 1;
+}    </style>
+    <script>
+/* GCOVR Custom JavaScript - Tree View & Interactivity */
+
+(function() {
+  'use strict';
+
+  // Wait for DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+    initSidebar();
+    initFileTree();
+    initBreadcrumbs();
+    initSearch();
+    initSorting();
+    initToggleButtons();
+    initTreeControls();
+  });
+
+  // ===========================================
+  // Breadcrumb Links
+  // ===========================================
+
+  function initBreadcrumbs() {
+    var currentSpan = document.querySelector('.breadcrumb .current');
+    if (!currentSpan || !window.GCOVR_TREE_DATA) return;
+
+    var pathText = currentSpan.textContent.trim();
+    var segments = pathText.split(' / ');
+    if (segments.length <= 1) return;
+
+    // Create linked breadcrumb by traversing tree
+    var fragment = document.createDocumentFragment();
+    var currentNodes = window.GCOVR_TREE_DATA;
+
+    for (var i = 0; i < segments.length; i++) {
+      var segment = segments[i];
+
+      if (i > 0) {
+        var sep = document.createElement('span');
+        sep.className = 'separator';
+        sep.textContent = '/';
+        fragment.appendChild(sep);
+      }
+
+      // Find this segment in current level of tree
+      var foundNode = null;
+      for (var j = 0; j < currentNodes.length; j++) {
+        if (currentNodes[j].name === segment) {
+          foundNode = currentNodes[j];
+          break;
+        }
+      }
+
+      if (foundNode && foundNode.link && i < segments.length - 1) {
+        // Directory segment with link - make it clickable
+        var a = document.createElement('a');
+        a.href = foundNode.link;
+        a.textContent = segment;
+        fragment.appendChild(a);
+        // Move to children for next iteration
+        currentNodes = foundNode.children || [];
+      } else {
+        // Last segment (current file) or no link found
+        var span = document.createElement('span');
+        span.className = 'current-file';
+        span.textContent = segment;
+        fragment.appendChild(span);
+        if (foundNode && foundNode.children) {
+          currentNodes = foundNode.children;
+        }
+      }
+    }
+
+    currentSpan.innerHTML = '';
+    currentSpan.appendChild(fragment);
+  }
+
+  // ===========================================
+  // Theme Toggle
+  // ===========================================
+
+  function initTheme() {
+    const toggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('gcovr-theme');
+
+    // Apply saved theme or default to dark
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    if (toggle) {
+      toggle.addEventListener('click', function() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('gcovr-theme', next);
+      });
+    }
+  }
+
+  // ===========================================
+  // Tree Controls (Expand/Collapse All)
+  // ===========================================
+
+  function initTreeControls() {
+    var expandBtn = document.getElementById('expand-all');
+    var collapseBtn = document.getElementById('collapse-all');
+
+    if (expandBtn) {
+      expandBtn.addEventListener('click', function() {
+        document.querySelectorAll('.tree-item').forEach(function(item) {
+          if (!item.classList.contains('no-children')) {
+            item.classList.add('expanded');
+            var toggle = item.querySelector(':scope > .tree-item-header > .tree-folder-toggle');
+            if (toggle) toggle.textContent = '−';
+          }
+        });
+      });
+    }
+
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', function() {
+        document.querySelectorAll('.tree-item').forEach(function(item) {
+          item.classList.remove('expanded');
+          var toggle = item.querySelector(':scope > .tree-item-header > .tree-folder-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+      });
+    }
+  }
+
+  // ===========================================
+  // Sidebar Toggle
+  // ===========================================
+
+  function initSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebar-toggle');
+
+    if (!sidebar || !toggle) return;
+
+    // Load saved state
+    const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+    if (isCollapsed) {
+      sidebar.classList.add('collapsed');
+    }
+
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('collapsed');
+      localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+    });
+
+    // Mobile: open sidebar when clicked outside should close it
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth <= 1024) {
+        if (sidebar.classList.contains('open') &&
+            !sidebar.contains(e.target) &&
+            e.target !== toggle &&
+            !toggle.contains(e.target)) {
+          sidebar.classList.remove('open');
+        }
+      }
+    });
+
+    // Mobile toggle
+    toggle.addEventListener('click', function() {
+      if (window.innerWidth <= 1024) {
+        sidebar.classList.toggle('open');
+      }
+    });
+  }
+
+  // ===========================================
+  // File Tree - Load from tree.json
+  // ===========================================
+
+  function initFileTree() {
+    var treeContainer = document.getElementById('file-tree');
+    if (!treeContainer) return;
+
+    // Check for embedded tree data first (works for local file:// access)
+    if (window.GCOVR_TREE_DATA) {
+      renderTree(treeContainer, window.GCOVR_TREE_DATA);
+      return;
+    }
+
+    // Fallback: try to load tree.json for full hierarchy
+    fetch('tree.json')
+      .then(function(response) {
+        if (!response.ok) throw new Error('No tree.json');
+        return response.json();
+      })
+      .then(function(tree) {
+        renderTree(treeContainer, tree);
+      })
+      .catch(function(err) {
+        console.log('tree.json not found, using static sidebar');
+        // Keep existing static content from Jinja template
+      });
+  }
+
+  function renderTree(container, tree) {
+    container.innerHTML = '';
+
+    if (!tree || tree.length === 0) {
+      container.innerHTML = '<div class="tree-loading">No files found</div>';
+      return;
+    }
+
+    tree.forEach(function(item) {
+      container.appendChild(createTreeItem(item));
+    });
+
+    // Auto-expand to current file and highlight it
+    expandToCurrentFile(container);
+  }
+
+  function expandToCurrentFile(container) {
+    // Get current page filename
+    var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+    // Find the link matching current page
+    var currentLink = container.querySelector('a[href="' + currentPage + '"]');
+    if (!currentLink) return;
+
+    // Mark as active
+    var treeItem = currentLink.closest('.tree-item');
+    if (treeItem) {
+      treeItem.classList.add('active');
+    }
+
+    // Expand all parent folders
+    var parent = currentLink.closest('.tree-children');
+    while (parent) {
+      var parentItem = parent.closest('.tree-item');
+      if (parentItem) {
+        parentItem.classList.add('expanded');
+        var toggle = parentItem.querySelector(':scope > .tree-item-header > .tree-folder-toggle');
+        if (toggle) toggle.textContent = '−';
+      }
+      parent = parentItem ? parentItem.parentElement.closest('.tree-children') : null;
+    }
+
+    // Scroll into view
+    if (currentLink) {
+      currentLink.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+
+  function createTreeItem(item) {
+    var hasChildren = item.children && item.children.length > 0;
+    var isDirectory = item.isDirectory || hasChildren;
+
+    var div = document.createElement('div');
+    div.className = 'tree-item' + (isDirectory ? ' is-folder' : '') + (hasChildren ? '' : ' no-children');
+
+    var header = document.createElement('div');
+    header.className = 'tree-item-header';
+    var toggle = null;
+
+    // Toggle button (+/-) for folders with children
+    if (hasChildren) {
+      toggle = document.createElement('button');
+      toggle.className = 'tree-folder-toggle';
+      toggle.textContent = '+';
+      toggle.setAttribute('aria-label', 'Toggle folder');
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var isExpanded = div.classList.toggle('expanded');
+        toggle.textContent = isExpanded ? '−' : '+';
+      });
+      header.appendChild(toggle);
+
+      // Make entire header clickable to expand/collapse
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', function(e) {
+        // Don't toggle if clicking a link
+        if (e.target.tagName === 'A') return;
+        e.preventDefault();
+        var isExpanded = div.classList.toggle('expanded');
+        toggle.textContent = isExpanded ? '−' : '+';
+      });
+    } else {
+      var spacer = document.createElement('span');
+      spacer.className = 'tree-spacer';
+      header.appendChild(spacer);
+    }
+
+    // Icon - different for folders vs files
+    var icon = document.createElement('span');
+    if (isDirectory) {
+      icon.className = 'tree-icon tree-icon-folder';
+      icon.innerHTML = '<svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>';
+    } else {
+      icon.className = 'tree-icon tree-icon-file';
+      icon.innerHTML = '<svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M3.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 019 4.25V1.5H3.75zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-2.938-2.938zM2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z"/></svg>';
+    }
+    header.appendChild(icon);
+
+    // Label (with link if available)
+    var label = document.createElement('span');
+    label.className = 'tree-label';
+    label.title = item.name;
+    if (item.link) {
+      var link = document.createElement('a');
+      link.href = item.link;
+      link.textContent = item.name;
+      link.title = item.name;
+      label.appendChild(link);
+    } else {
+      label.textContent = item.name;
+    }
+    header.appendChild(label);
+
+    div.appendChild(header);
+
+    // Children container (for expand/collapse)
+    if (hasChildren) {
+      var childrenWrapper = document.createElement('div');
+      childrenWrapper.className = 'tree-children';
+
+      var childrenInner = document.createElement('div');
+      childrenInner.className = 'tree-children-inner';
+      item.children.forEach(function(child) {
+        childrenInner.appendChild(createTreeItem(child));
+      });
+
+      childrenWrapper.appendChild(childrenInner);
+      div.appendChild(childrenWrapper);
+    }
+
+    return div;
+  }
+
+  // ===========================================
+  // Search
+  // ===========================================
+
+  function initSearch() {
+    const searchInput = document.getElementById('file-search');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase().trim();
+      const treeItems = document.querySelectorAll('.tree-item');
+
+      treeItems.forEach(function(item) {
+        const label = item.querySelector('.tree-label');
+        if (label) {
+          const text = label.textContent.toLowerCase();
+          const matches = query === '' || text.includes(query);
+          item.style.display = matches ? '' : 'none';
+        }
+      });
+    });
+  }
+
+  // ===========================================
+  // Sorting
+  // ===========================================
+
+  function initSorting() {
+    const headers = document.querySelectorAll('.file-list-header .sortable, .functions-header .sortable');
+
+    headers.forEach(function(header) {
+      header.addEventListener('click', function() {
+        const sortKey = this.dataset.sort;
+        const isAscending = this.classList.contains('sorted-ascending');
+
+        // Remove sorted class from all headers
+        headers.forEach(function(h) {
+          h.classList.remove('sorted-ascending', 'sorted-descending');
+        });
+
+        // Toggle sort direction
+        this.classList.add(isAscending ? 'sorted-descending' : 'sorted-ascending');
+
+        // Sort the list
+        sortList(sortKey, !isAscending);
+      });
+    });
+  }
+
+  function sortList(key, ascending) {
+    const container = document.getElementById('file-list') || document.querySelector('.functions-body');
+    if (!container) return;
+
+    const rows = Array.from(container.children);
+
+    rows.sort(function(a, b) {
+      let aVal = a.dataset[key] || a.querySelector('[data-sort]')?.dataset.sort || '';
+      let bVal = b.dataset[key] || b.querySelector('[data-sort]')?.dataset.sort || '';
+
+      // Try to parse as numbers
+      const aNum = parseFloat(aVal);
+      const bNum = parseFloat(bVal);
+
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return ascending ? aNum - bNum : bNum - aNum;
+      }
+
+      // String comparison
+      return ascending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    });
+
+    rows.forEach(function(row) {
+      container.appendChild(row);
+    });
+  }
+
+  // ===========================================
+  // Toggle Buttons (Coverage Lines)
+  // ===========================================
+
+  function initToggleButtons() {
+    const buttons = document.querySelectorAll('.button_toggle_coveredLine, .button_toggle_uncoveredLine, .button_toggle_partialCoveredLine, .button_toggle_excludedLine');
+
+    buttons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        const lineClass = this.value;
+        const showClass = 'show_' + lineClass;
+
+        // Toggle the button state
+        this.classList.toggle(showClass);
+
+        // Toggle visibility of lines
+        const lines = document.querySelectorAll('.' + lineClass);
+        lines.forEach(function(line) {
+          line.classList.toggle(showClass);
+        });
+      });
+    });
+
+    // Also handle simpler toggle buttons
+    const simpleToggles = document.querySelectorAll('.btn-toggle');
+    simpleToggles.forEach(function(button) {
+      button.addEventListener('click', function() {
+        const classes = Array.from(this.classList);
+        const showClass = classes.find(function(c) { return c.startsWith('show_'); });
+
+        if (showClass) {
+          this.classList.toggle(showClass);
+          const lineClass = showClass.replace('show_', '');
+          const lines = document.querySelectorAll('.' + lineClass);
+          lines.forEach(function(line) {
+            line.classList.toggle(showClass);
+          });
+        }
+      });
+    });
+  }
+
+})();    </script>
+  </head>
+
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title-row">
+            <h2><a href="index.html" class="sidebar-title-link">Coverage Report</a></h2>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light mode">
+              <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="sidebar-search">
+            <input type="text" id="file-search" placeholder="Search files..." autocomplete="off">
+          </div>
+        </div>
+        <div class="tree-controls">
+          <button class="tree-control-btn" id="expand-all" title="Expand all">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a.5.5 0 01.5.5v5h5a.5.5 0 010 1h-5v5a.5.5 0 01-1 0v-5h-5a.5.5 0 010-1h5v-5A.5.5 0 018 1z"/></svg>
+            Expand
+          </button>
+          <button class="tree-control-btn" id="collapse-all" title="Collapse all">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 8a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11A.5.5 0 012 8z"/></svg>
+            Collapse
+          </button>
+        </div>
+        <nav class="sidebar-nav" id="file-tree">
+<div class="tree-item">
+  <div class="tree-item-header">
+    <a href="index.html" class="tree-toggle" title="Back to directory">
+      <span class="toggle-icon">&larr;</span>
+    </a>
+    <span class="tree-icon folder">
+      <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>
+    </span>
+    <a class="tree-label" href="index.html">Back to Index</a>
+  </div>
+</div>
+<div class="tree-item active">
+  <div class="tree-item-header">
+    <span class="tree-toggle-spacer"></span>
+    <span class="tree-icon file">
+      <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M3.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 019 4.25V1.5H3.75zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-2.938-2.938zM2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z"></path></svg>
+    </span>
+    <span class="tree-label">detail/charconv/detail/integer_search_trees.hpp</span>
+  </div>
+</div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="main-header">
+          <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="breadcrumb">
+<a href="index.html">Root</a><span class="separator">/</span><span class="current">detail / charconv / detail / integer_search_trees.hpp</span>          </div>
+          <div class="header-actions">
+<div class="nav-links">
+  <a class="nav-link nav-prev" href="index.from_chars_integer_impl.hpp.62421e671be5feb9c0f1e3df5a09b86e.html" title="Previous file">
+    <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M9.78 12.78a.75.75 0 01-1.06 0L4.47 8.53a.75.75 0 010-1.06l4.25-4.25a.75.75 0 011.06 1.06L6.06 8l3.72 3.72a.75.75 0 010 1.06z"></path></svg>
+    Prev
+  </a>
+  <a class="nav-link nav-index" href="index.html" title="Back to index">
+    <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6.906.664a1.749 1.749 0 012.187 0l5.25 4.2c.415.332.657.835.657 1.367v7.019A1.75 1.75 0 0113.25 15h-3.5a.75.75 0 01-.75-.75V9H7v5.25a.75.75 0 01-.75.75h-3.5A1.75 1.75 0 011 13.25V6.23c0-.531.242-1.034.657-1.366l5.25-4.2z"></path></svg>
+    Index
+  </a>
+  <a class="nav-link nav-next" href="index.parser.hpp.45a498812670ba69036304cd17e3052d.html" title="Next file">
+    Next
+    <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M6.22 3.22a.75.75 0 011.06 0l4.25 4.25a.75.75 0 010 1.06l-4.25 4.25a.75.75 0 01-1.06-1.06L9.94 8 6.22 4.28a.75.75 0 010-1.06z"></path></svg>
+  </a>
+</div>          </div>
+        </header>
+
+        <div class="content-wrapper">
+          <section class="summary-section">
+<div class="source-summary">
+  <div class="source-info">
+    <h2 class="source-filename">detail/charconv/detail/integer_search_trees.hpp</h2>
+    <div class="source-stats">
+      <span class="stat coverage-none">
+        <strong>0.0%</strong> Lines (0/40)
+      </span>
+      <span class="stat coverage-unknown">
+        <strong>-%</strong> Functions (0/0)
+      </span>
+      <span class="stat coverage-unknown">
+        <strong>-%</strong> Branches (0/0)
+      </span>
+    </div>
+  </div>
+
+  <div class="source-controls">
+    <button class="btn btn-toggle show_coveredLine" id="toggle-covered" title="Toggle covered lines">
+      <span class="color-dot covered"></span> Covered
+    </button>
+    <button class="btn btn-toggle show_uncoveredLine" id="toggle-uncovered" title="Toggle uncovered lines">
+      <span class="color-dot uncovered"></span> Uncovered
+    </button>
+  </div>
+</div>          </section>
+
+          <section class="main-section">
+<div class="source-container no-branches">
+  <div class="source-header">
+    <div class="source-title">detail/charconv/detail/integer_search_trees.hpp</div>
+    <div class="source-actions">
+      <button type="button" class="btn btn-sm button_toggle_coveredLine show_coveredLine" value="coveredLine" title="Toggle covered lines">
+        <span class="btn-count">0</span> covered
+      </button>
+      <button type="button" class="btn btn-sm button_toggle_uncoveredLine show_uncoveredLine" value="uncoveredLine" title="Toggle uncovered lines">
+        <span class="btn-count">40</span> uncovered
+      </button>
+    </div>
+  </div>
+
+  <div class="source-table-container">
+    <table class="source-table">
+      <thead>
+        <tr>
+          <th class="col-lineno">Line</th>
+          <th class="col-count">Hits</th>
+          <th class="col-source">Source Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l1" href="#l1">1</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Copyright 2023 Matt Borland</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l2" href="#l2">2</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Distributed under the Boost Software License, Version 1.0.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l3" href="#l3">3</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// https://www.boost.org/LICENSE_1_0.txt</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l4" href="#l4">4</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l5" href="#l5">5</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#ifndef BOOST_JSON_DETAIL_CHARCONV_DETAIL_INTEGER_SEARCH_TREES_HPP</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l6" href="#l6">6</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#define BOOST_JSON_DETAIL_CHARCONV_DETAIL_INTEGER_SEARCH_TREES_HPP</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l7" href="#l7">7</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l8" href="#l8">8</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// https://stackoverflow.com/questions/1489830/efficient-way-to-determine-number-of-digits-in-an-integer?page=1&amp;tab=scoredesc#tab-top</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l9" href="#l9">9</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// https://graphics.stanford.edu/~seander/bithacks.html</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l10" href="#l10">10</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l11" href="#l11">11</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/json/detail/charconv/detail/config.hpp&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l12" href="#l12">12</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;limits&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l13" href="#l13">13</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;array&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l14" href="#l14">14</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;cstdint&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l15" href="#l15">15</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l16" href="#l16">16</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">namespace</span><span class="w"> </span><span class="nn">boost</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">detail</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">charconv</span><span class="w"> </span><span class="p">{</span><span class="w"> </span><span class="k">namespace</span><span class="w"> </span><span class="nn">detail</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l17" href="#l17">17</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l18" href="#l18">18</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Generic solution</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l19" href="#l19">19</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">template</span><span class="w"> </span><span class="o">&lt;</span><span class="k">typename</span><span class="w"> </span><span class="nc">T</span><span class="o">&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l20" href="#l20">20</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="n">BOOST_JSON_CXX14_CONSTEXPR</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_digits</span><span class="p">(</span><span class="n">T</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l21" href="#l21">21</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l22" href="#l22">22</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="kt">int</span><span class="w"> </span><span class="n">digits</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l23" href="#l23">23</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l24" href="#l24">24</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">while</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="p">)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l25" href="#l25">25</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l26" href="#l26">26</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="n">x</span><span class="w"> </span><span class="o">/=</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l27" href="#l27">27</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="o">++</span><span class="n">digits</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l28" href="#l28">28</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l29" href="#l29">29</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l30" href="#l30">30</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="n">digits</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l31" href="#l31">31</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l32" href="#l32">32</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l33" href="#l33">33</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l34" href="#l34">34</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="n">BOOST_JSON_CXX14_CONSTEXPR</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_digits</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l35" href="#l35">35</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l36" href="#l36">36</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l37" href="#l37">37</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l38" href="#l38">38</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">10000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l39" href="#l39">39</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l40" href="#l40">40</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">100000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l41" href="#l41">41</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l42" href="#l42">42</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">1000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l43" href="#l43">43</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l44" href="#l44">44</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l45" href="#l45">45</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l46" href="#l46">46</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">9</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l47" href="#l47">47</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l48" href="#l48">48</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l49" href="#l49">49</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l50" href="#l50">50</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l51" href="#l51">51</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">100000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l52" href="#l52">52</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l53" href="#l53">53</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">1000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l54" href="#l54">54</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l55" href="#l55">55</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l56" href="#l56">56</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l57" href="#l57">57</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">6</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l58" href="#l58">58</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l59" href="#l59">59</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l60" href="#l60">60</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l61" href="#l61">61</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l62" href="#l62">62</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l63" href="#l63">63</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l64" href="#l64">64</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l65" href="#l65">65</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l66" href="#l66">66</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l67" href="#l67">67</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l68" href="#l68">68</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l69" href="#l69">69</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT32_C</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l70" href="#l70">70</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l71" href="#l71">71</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l72" href="#l72">72</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l73" href="#l73">73</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l74" href="#l74">74</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l75" href="#l75">75</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l76" href="#l76">76</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l77" href="#l77">77</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">template</span><span class="w"> </span><span class="o">&lt;&gt;</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l78" href="#l78">78</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="n">BOOST_JSON_CXX14_CONSTEXPR</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_digits</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l79" href="#l79">79</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l80" href="#l80">80</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l81" href="#l81">81</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l82" href="#l82">82</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l83" href="#l83">83</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l84" href="#l84">84</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l85" href="#l85">85</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l86" href="#l86">86</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l87" href="#l87">87</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l88" href="#l88">88</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l89" href="#l89">89</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l90" href="#l90">90</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l91" href="#l91">91</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l92" href="#l92">92</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                            </span><span class="k">return</span><span class="w"> </span><span class="mi">20</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l93" href="#l93">93</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l94" href="#l94">94</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                        </span><span class="k">return</span><span class="w"> </span><span class="mi">19</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l95" href="#l95">95</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l96" href="#l96">96</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="mi">18</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l97" href="#l97">97</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l98" href="#l98">98</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">17</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l99" href="#l99">99</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l100" href="#l100">100</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l101" href="#l101">101</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l102" href="#l102">102</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">16</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l103" href="#l103">103</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l104" href="#l104">104</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">15</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l105" href="#l105">105</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l106" href="#l106">106</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l107" href="#l107">107</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l108" href="#l108">108</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l109" href="#l109">109</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l110" href="#l110">110</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">14</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l111" href="#l111">111</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l112" href="#l112">112</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">13</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l113" href="#l113">113</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l114" href="#l114">114</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l115" href="#l115">115</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l116" href="#l116">116</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">12</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l117" href="#l117">117</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l118" href="#l118">118</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">11</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l119" href="#l119">119</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l120" href="#l120">120</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">else</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l121" href="#l121">121</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l122" href="#l122">122</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l123" href="#l123">123</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l124" href="#l124">124</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l125" href="#l125">125</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l126" href="#l126">126</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l127" href="#l127">127</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l128" href="#l128">128</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                    </span><span class="k">return</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l129" href="#l129">129</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l130" href="#l130">130</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">9</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l131" href="#l131">131</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l132" href="#l132">132</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">8</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l133" href="#l133">133</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l134" href="#l134">134</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l135" href="#l135">135</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l136" href="#l136">136</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">7</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l137" href="#l137">137</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l138" href="#l138">138</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">6</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l139" href="#l139">139</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l140" href="#l140">140</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l141" href="#l141">141</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l142" href="#l142">142</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l143" href="#l143">143</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l144" href="#l144">144</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l145" href="#l145">145</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l146" href="#l146">146</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">                </span><span class="k">return</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l147" href="#l147">147</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">            </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l148" href="#l148">148</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">            </span><span class="k">return</span><span class="w"> </span><span class="mi">4</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l149" href="#l149">149</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">        </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l150" href="#l150">150</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l151" href="#l151">151</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l152" href="#l152">152</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l153" href="#l153">153</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l154" href="#l154">154</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">        </span><span class="k">return</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l155" href="#l155">155</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line uncoveredLine show_uncoveredLine">
+          <td class="col-lineno">
+            <a id="l156" href="#l156">156</a>
+          </td>
+          <td class="col-count uncoveredLine">
+<span class="hit-miss">&cross;</span>          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l157" href="#l157">157</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l158" href="#l158">158</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l159" href="#l159">159</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#ifdef BOOST_HAS_INT128</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l160" href="#l160">160</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">static</span><span class="w"> </span><span class="k">constexpr</span><span class="w"> </span><span class="n">std</span><span class="o">::</span><span class="n">array</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="kt">uint64_t</span><span class="p">,</span><span class="w"> </span><span class="mi">20</span><span class="o">&gt;</span><span class="w"> </span><span class="n">powers_of_10</span><span class="w"> </span><span class="o">=</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l161" href="#l161">161</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">{{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l162" href="#l162">162</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000</span><span class="p">),</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l163" href="#l163">163</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000000</span><span class="p">),</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l164" href="#l164">164</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000000000</span><span class="p">),</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l165" href="#l165">165</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">100000000000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">1000000000000000000</span><span class="p">),</span><span class="w"> </span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000000000</span><span class="p">)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l166" href="#l166">166</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}};</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l167" href="#l167">167</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l168" href="#l168">168</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Assume that if someone is using 128 bit ints they are favoring the top end of the range</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l169" href="#l169">169</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Max value is 340,282,366,920,938,463,463,374,607,431,768,211,455 (39 digits)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l170" href="#l170">170</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="n">BOOST_JSON_CXX14_CONSTEXPR</span><span class="w"> </span><span class="kt">int</span><span class="w"> </span><span class="n">num_digits</span><span class="p">(</span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="k">noexcept</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l171" href="#l171">171</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l172" href="#l172">172</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="c1">// There is not literal for boost::uint128_type so we need to calculate them using the max value of the</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l173" href="#l173">173</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="c1">// std::uint64_t powers of 10</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l174" href="#l174">174</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_39</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000000000</span><span class="p">))</span><span class="w"> </span><span class="o">*</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l175" href="#l175">175</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">                                              </span><span class="k">static_cast</span><span class="o">&lt;</span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="o">&gt;</span><span class="p">(</span><span class="n">UINT64_C</span><span class="p">(</span><span class="mi">10000000000000000000</span><span class="p">));</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l176" href="#l176">176</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l177" href="#l177">177</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_38</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_39</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l178" href="#l178">178</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_37</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_38</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l179" href="#l179">179</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_36</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_37</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l180" href="#l180">180</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_35</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_36</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l181" href="#l181">181</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_34</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_35</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l182" href="#l182">182</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_33</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_34</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l183" href="#l183">183</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_32</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_33</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l184" href="#l184">184</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_31</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_32</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l185" href="#l185">185</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_30</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_31</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l186" href="#l186">186</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_29</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_30</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l187" href="#l187">187</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_28</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_29</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l188" href="#l188">188</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_27</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_28</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l189" href="#l189">189</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_26</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_27</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l190" href="#l190">190</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_25</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_26</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l191" href="#l191">191</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_24</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_25</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l192" href="#l192">192</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_23</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_24</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l193" href="#l193">193</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_22</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_23</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l194" href="#l194">194</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">constexpr</span><span class="w"> </span><span class="n">boost</span><span class="o">::</span><span class="n">uint128_type</span><span class="w"> </span><span class="n">digits_21</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">digits_22</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l195" href="#l195">195</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l196" href="#l196">196</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_39</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">39</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l197" href="#l197">197</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_38</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">38</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l198" href="#l198">198</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_37</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">37</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l199" href="#l199">199</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_36</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">36</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l200" href="#l200">200</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_35</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">35</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l201" href="#l201">201</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_34</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">34</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l202" href="#l202">202</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_33</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">33</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l203" href="#l203">203</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_32</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">32</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l204" href="#l204">204</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_31</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">31</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l205" href="#l205">205</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_30</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">30</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l206" href="#l206">206</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_29</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">29</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l207" href="#l207">207</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_28</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">28</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l208" href="#l208">208</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_27</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">27</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l209" href="#l209">209</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_26</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">26</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l210" href="#l210">210</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_25</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">25</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l211" href="#l211">211</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_24</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">24</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l212" href="#l212">212</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_23</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">23</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l213" href="#l213">213</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_22</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">22</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l214" href="#l214">214</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">digits_21</span><span class="p">)</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">21</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l215" href="#l215">215</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">19</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">20</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l216" href="#l216">216</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">18</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">19</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l217" href="#l217">217</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">17</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">18</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l218" href="#l218">218</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">16</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">17</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l219" href="#l219">219</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">15</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">16</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l220" href="#l220">220</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">14</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">15</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l221" href="#l221">221</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">13</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">14</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l222" href="#l222">222</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">12</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">13</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l223" href="#l223">223</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">11</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">12</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l224" href="#l224">224</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">10</span><span class="p">])</span><span class="w"> </span><span class="o">?</span><span class="w"> </span><span class="mi">11</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l225" href="#l225">225</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">9</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w"> </span><span class="mi">10</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l226" href="#l226">226</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">8</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">9</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l227" href="#l227">227</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">7</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">8</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l228" href="#l228">228</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">6</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">7</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l229" href="#l229">229</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">5</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">6</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l230" href="#l230">230</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">4</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">5</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l231" href="#l231">231</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">3</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">4</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l232" href="#l232">232</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">3</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l233" href="#l233">233</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">2</span><span class="w"> </span><span class="o">:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l234" href="#l234">234</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">           </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">powers_of_10</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="w">  </span><span class="o">?</span><span class="w">  </span><span class="mi">1</span><span class="w"> </span><span class="o">:</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l235" href="#l235">235</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l236" href="#l236">236</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#endif</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l237" href="#l237">237</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l238" href="#l238">238</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}}}}}</span><span class="w"> </span><span class="c1">// Namespace boost::json::detail::charconv::detail</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l239" href="#l239">239</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l240" href="#l240">240</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#endif </span><span class="c1">// BOOST_JSON_DETAIL_CHARCONV_DETAIL_INTEGER_SEARCH_TREES_HPP</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l241" href="#l241">241</a>
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>          </section>
+        </div>
+
+        <footer class="main-footer">
+          Created using <a href="http://gcovr.com/en/8.6">GCOVR (Version 8.6)</a>
+          at 2026-01-27 11:59:33
+        </footer>
+      </main>
+    </div>
+  <script>window.GCOVR_TREE_DATA=[{"name": "detail", "coverage": "83.0", "coverageClass": "coverage-medium", "isDirectory": true, "link": "index.detail.0ab43ac414239956f09d5b0181f77c50.html", "children": [{"name": "charconv", "coverage": "52.9", "coverageClass": "coverage-low", "isDirectory": true, "link": "index.charconv.510f5dd29cc43eca58c0d2b93adff045.html", "children": [{"name": "detail", "coverage": "53.2", "coverageClass": "coverage-low", "isDirectory": true, "link": "index.detail.287b6ad9e303318f27f0e943b3878477.html", "children": [{"name": "fast_float", "coverage": "79.6", "coverageClass": "coverage-medium", "isDirectory": true, "link": "index.fast_float.eccdc16b8d3a6677c41246e350f1ee5c.html", "children": [{"name": "ascii_number.hpp", "coverage": "88.0", "coverageClass": "coverage-medium", "isDirectory": false, "link": "index.ascii_number.hpp.06e327eb6aa84eac97ab3143afde5536.html", "children": []}, {"name": "bigint.hpp", "coverage": "89.9", "coverageClass": "coverage-medium", "isDirectory": false, "link": "index.bigint.hpp.7ed59f082bdc8865c839e37a907818ae.html", "children": []}, {"name": "decimal_to_binary.hpp", "coverage": "94.7", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.decimal_to_binary.hpp.aa9ca29d0a37b3474618fa96dc2b5923.html", "children": []}, {"name": "digit_comparison.hpp", "coverage": "76.9", "coverageClass": "coverage-medium", "isDirectory": false, "link": "index.digit_comparison.hpp.d6697c5bee8735e93381acb1ede736e7.html", "children": []}, {"name": "float_common.hpp", "coverage": "62.7", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.float_common.hpp.60c7bd470abb6c3589089cc294f360d4.html", "children": []}, {"name": "parse_number.hpp", "coverage": "42.9", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.parse_number.hpp.7949b767450af0a0c4e38d459ab8efa6.html", "children": []}]}, {"name": "compute_float64.hpp", "coverage": "0.0", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.compute_float64.hpp.14da4b5c079d398c9d8067d0d7a811dc.html", "children": []}, {"name": "emulated128.hpp", "coverage": "0.0", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.emulated128.hpp.0ceaaed8d203e80b297f0b1456573326.html", "children": []}, {"name": "from_chars_float_impl.hpp", "coverage": "0.0", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.from_chars_float_impl.hpp.a4a922435f511d73baf7f630422a09ef.html", "children": []}, {"name": "from_chars_integer_impl.hpp", "coverage": "0.0", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.from_chars_integer_impl.hpp.62421e671be5feb9c0f1e3df5a09b86e.html", "children": []}, {"name": "integer_search_trees.hpp", "coverage": "0.0", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.integer_search_trees.hpp.4c04f6dbbc7f34b14ccd1b3f4b32318c.html", "children": []}, {"name": "parser.hpp", "coverage": "0.0", "coverageClass": "coverage-low", "isDirectory": false, "link": "index.parser.hpp.45a498812670ba69036304cd17e3052d.html", "children": []}]}, {"name": "impl/from_chars.ipp", "coverage": "25.0", "coverageClass": "coverage-low", "isDirectory": true, "link": "index.from_chars.ipp.1f79c0e3711fd7d708dc790de46627b3.html", "children": []}]}, {"name": "impl", "coverage": "99.3", "coverageClass": "coverage-high", "isDirectory": true, "link": "index.impl.cde90127c1b0418ad9f796d3477a9914.html", "children": [{"name": "array.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.array.hpp.ffb272ea2be09d8caf7e569420bf69e3.html", "children": []}, {"name": "default_resource.ipp", "coverage": "87.5", "coverageClass": "coverage-medium", "isDirectory": false, "link": "index.default_resource.ipp.29b0230184410f16ceaecef9a447dcef.html", "children": []}, {"name": "except.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.except.ipp.12c9aef5d4d66299103ac6024ed0063f.html", "children": []}, {"name": "format.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.format.ipp.9ec47a71b786a54db9e57825e82a5eb7.html", "children": []}, {"name": "handler.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.handler.ipp.25997a61b96794a78e1e3ddeede59723.html", "children": []}, {"name": "shared_resource.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.shared_resource.ipp.f07eb9144ccb01dab822bc01a22dda0d.html", "children": []}, {"name": "stack.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.stack.hpp.c6cfbf398aba6b34d13f47ba0d19bf6a.html", "children": []}, {"name": "stack.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.stack.ipp.3a9e0e01201646e2f48328d15e4e2602.html", "children": []}, {"name": "string_impl.ipp", "coverage": "99.1", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.string_impl.ipp.e66f2c45d36b3fec9c3bfbb095fa9edb.html", "children": []}]}, {"name": "ryu", "coverage": "99.7", "coverageClass": "coverage-high", "isDirectory": true, "link": "index.ryu.9a047557b83bbcb666051bf9b69b073a.html", "children": [{"name": "detail", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": true, "link": "index.detail.e4ef6da21b1421bbb8fd14958bc3b5ac.html", "children": [{"name": "common.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.common.hpp.98695bbba488db8061085c97a91bfff6.html", "children": []}, {"name": "d2s.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.d2s.hpp.cde3922f605044959e8be4ef6db1abab.html", "children": []}, {"name": "d2s_full_table.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.d2s_full_table.hpp.08b587354545c40cd025a0cdb25e60c9.html", "children": []}, {"name": "d2s_intrinsics.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.d2s_intrinsics.hpp.83ef835088fb80240623093e946e5ee8.html", "children": []}, {"name": "digit_table.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.digit_table.hpp.54cb42fce758b96305314c836f5822d5.html", "children": []}]}, {"name": "impl/d2s.ipp", "coverage": "99.6", "coverageClass": "coverage-high", "isDirectory": true, "link": "index.d2s.ipp.5c6823db6d8cdf35aa2e1efe1dbd8e24.html", "children": []}]}, {"name": "array.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.array.hpp.161c04ed0fb44652959476d632ffe1a5.html", "children": []}, {"name": "buffer.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.buffer.hpp.55b2280adf5814131719bffc56d99e63.html", "children": []}, {"name": "config.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.config.hpp.0a32ee1b4391ae1eeb404af25739161a.html", "children": []}, {"name": "default_resource.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.default_resource.hpp.cf498b84410e67aa58bd4c613cab1f84.html", "children": []}, {"name": "digest.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.digest.hpp.905cd2165a4f34376c449f885fe1adf1.html", "children": []}, {"name": "literals.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.literals.hpp.2e722ac7a80e95232217c08e5473907a.html", "children": []}, {"name": "object.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.object.hpp.f7e5cc97accf7f1302ce80ea402b6373.html", "children": []}, {"name": "parse_into.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.parse_into.hpp.f1e9fbffabe35587d223b9d98d9e761c.html", "children": []}, {"name": "sbo_buffer.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.sbo_buffer.hpp.9e08251ec0ed54496b3a8a6fb89a63c3.html", "children": []}, {"name": "shared_resource.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.shared_resource.hpp.1927ca08c89a37cdfbf293076af47ff7.html", "children": []}, {"name": "sse2.hpp", "coverage": "97.8", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.sse2.hpp.6a507d81ac7c10f52d533f58d85ac238.html", "children": []}, {"name": "stack.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.stack.hpp.2c1d90a4d04ade6bea988474789a22e6.html", "children": []}, {"name": "stream.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.stream.hpp.07654afdcb5f383c2335d7fecd03055c.html", "children": []}, {"name": "string_impl.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.string_impl.hpp.3bd773ee5e5571ae1ed6db73d00280e3.html", "children": []}, {"name": "utf8.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.utf8.hpp.d18a20eb6345bd7b0b78784fd246f3ed.html", "children": []}, {"name": "value.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value.hpp.08b63e532c8156eaeb5cccaa7944e074.html", "children": []}, {"name": "value_from.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_from.hpp.1cdcc419fa9e4a63453aa84ed54ca11f.html", "children": []}, {"name": "value_to.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_to.hpp.635e555e887031c6fc380bccf2c402de.html", "children": []}]}, {"name": "impl", "coverage": "99.2", "coverageClass": "coverage-high", "isDirectory": true, "link": "index.impl.c82c9a65c0038782a53ba4c76e95a641.html", "children": [{"name": "array.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.array.hpp.43ca8a64d5cb1e0e18bac819d8dd589d.html", "children": []}, {"name": "array.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.array.ipp.12b73a50f89b12e61f6c515c936b6c51.html", "children": []}, {"name": "conversion.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.conversion.hpp.c385894883668d872f8d1b74220b0f7e.html", "children": []}, {"name": "error.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.error.hpp.561447e3b80e5107d88e9cf24f3b9513.html", "children": []}, {"name": "error.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.error.ipp.5ffd5dbb81ff10cef7db2ed5dff0c794.html", "children": []}, {"name": "kind.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.kind.ipp.944bac86090b83665f00c8cee1a3defe.html", "children": []}, {"name": "monotonic_resource.ipp", "coverage": "97.1", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.monotonic_resource.ipp.05f2ed6d69820a792f84fc5a30acb7c6.html", "children": []}, {"name": "null_resource.ipp", "coverage": "77.8", "coverageClass": "coverage-medium", "isDirectory": false, "link": "index.null_resource.ipp.a960c79e90c931af68e459ac2d12d5fe.html", "children": []}, {"name": "object.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.object.hpp.f9faeb03c62042d95f8ee35052afa9e9.html", "children": []}, {"name": "object.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.object.ipp.84c492a53a4bbdeb0fd1338b41d399a5.html", "children": []}, {"name": "parse.ipp", "coverage": "96.1", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.parse.ipp.bda6280a016bf6834766bc3a0bff32bc.html", "children": []}, {"name": "parse_into.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.parse_into.hpp.9fe27b0246ac36c90c713d2ffcd261fd.html", "children": []}, {"name": "parser.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.parser.ipp.266f2bed4bd28788f0addeb11aa58a0d.html", "children": []}, {"name": "pointer.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.pointer.ipp.29ac44758c62ce39e625bbc7f1409991.html", "children": []}, {"name": "serialize.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.serialize.hpp.d3414f2b51c87c80044a72e36bd57115.html", "children": []}, {"name": "serialize.ipp", "coverage": "96.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.serialize.ipp.01c963125bda877c839757dd2c6962c0.html", "children": []}, {"name": "serializer.hpp", "coverage": "97.8", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.serializer.hpp.ad86b38709508f8d05ea641d2e98c1da.html", "children": []}, {"name": "serializer.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.serializer.ipp.a6e01f5c62a1e98844cee0136d1d1512.html", "children": []}, {"name": "static_resource.ipp", "coverage": "81.8", "coverageClass": "coverage-medium", "isDirectory": false, "link": "index.static_resource.ipp.da4918eee73bb2b38d71ee2c22c5a4b6.html", "children": []}, {"name": "stream_parser.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.stream_parser.ipp.9e84d7cb15fc2f2f5eb0a5dbb07fed15.html", "children": []}, {"name": "string.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.string.hpp.753c5fbae83abdbca988b8d9bf6c7e2c.html", "children": []}, {"name": "string.ipp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.string.ipp.608f1816a0e4c09495ec66dab6eb9085.html", "children": []}, {"name": "value.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value.hpp.927a100eb53bf40397be1d8b22da1871.html", "children": []}, {"name": "value.ipp", "coverage": "98.7", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value.ipp.210aedf137631846f16fbe0ee4f0812c.html", "children": []}, {"name": "value_ref.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_ref.hpp.9e9582fd1af4a003bf535e71a0b7904d.html", "children": []}, {"name": "value_ref.ipp", "coverage": "96.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_ref.ipp.e9a0bd8aab92a2b5ab364bf6b69e3959.html", "children": []}, {"name": "value_stack.ipp", "coverage": "99.5", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_stack.ipp.898987b601e2219cdbbc0139ef61766f.html", "children": []}, {"name": "visit.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.visit.hpp.d5ce1db1e3454de3538149bf6f28b617.html", "children": []}]}, {"name": "array.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.array.hpp.6e0bda7bf6757e548b5faad83e899291.html", "children": []}, {"name": "basic_parser.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.basic_parser.hpp.c9c83104d1acc54b93b6e51f63102df2.html", "children": []}, {"name": "basic_parser_impl.hpp", "coverage": "98.3", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.basic_parser_impl.hpp.5c3e10cbda02afe7ee8dcae02239f852.html", "children": []}, {"name": "monotonic_resource.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.monotonic_resource.hpp.c7901c306f139d49bdd39970ea9decfb.html", "children": []}, {"name": "object.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.object.hpp.4af583e26a117226f5f096905dacf35c.html", "children": []}, {"name": "parser.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.parser.hpp.d91835266758ed9bedb91a3636a5e82c.html", "children": []}, {"name": "pilfer.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.pilfer.hpp.4dd6b487af20fd66fc07f525c990eb8b.html", "children": []}, {"name": "result_for.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.result_for.hpp.e956a435ea4d78939339c698f7ed6545.html", "children": []}, {"name": "serializer.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.serializer.hpp.79c79ec35822453ea6370e04c673a001.html", "children": []}, {"name": "static_resource.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.static_resource.hpp.7bee809dfe2a5a1cb7dd0c3dd2654987.html", "children": []}, {"name": "storage_ptr.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.storage_ptr.hpp.ac80baa46fb5bebc8f455223b00c44c4.html", "children": []}, {"name": "stream_parser.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.stream_parser.hpp.756a2056175378bf4974ad36f699d9ba.html", "children": []}, {"name": "string.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.string.hpp.a0ee7b78a1e1a48649112e27bc32c7ed.html", "children": []}, {"name": "value.hpp", "coverage": "98.9", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value.hpp.4e464561aa627034092b7a363639d5b7.html", "children": []}, {"name": "value_from.hpp", "coverage": "92.3", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_from.hpp.a24a88c1f8fcc581db892ed3062c98a8.html", "children": []}, {"name": "value_ref.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_ref.hpp.5136da43247c9084cc2a038477b40231.html", "children": []}, {"name": "value_to.hpp", "coverage": "100.0", "coverageClass": "coverage-high", "isDirectory": false, "link": "index.value_to.hpp.1b7ce679b2c4b444ce7bf9f62953b6be.html", "children": []}];</script>
+</body>
+
+</html>
