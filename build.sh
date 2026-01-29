@@ -33,6 +33,7 @@ if [[ -f "$BOOST_CI_SRC_FOLDER/coverage_filtered.info" ]]; then
     "$SCRIPT_DIR/scripts/gcovr_wrapper.py" \
         --cobertura-add-tracefile "$TEMP_XML" \
         --root "$SCRIPT_DIR" \
+        --merge-lines \
         --html-nested \
         --html-template-dir "$SCRIPT_DIR/templates/html" \
         --output "$outputlocation/index.html"
@@ -43,6 +44,7 @@ else
     # CI/Linux: gcovr reads coverage data directly
     cd ../boost-root
     gcovr --merge-mode-functions separate -p \
+        --merge-lines \
         --html-nested \
         --html-template-dir=../templates/html \
         --exclude-unreachable-branches \
