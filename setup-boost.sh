@@ -33,6 +33,13 @@ if [[ -n "${1:-}" ]]; then
     git submodule update --init --depth 1 libs/$LIB
     git submodule update --init --depth 1 tools/boostdep
     python3 tools/boostdep/depinst/depinst.py --include example $LIB
+
+    # Create boost/ symlink so coverage data paths work
+    # (coverage references boost/json/ but source is at libs/json/include/boost/)
+    if [[ -d "libs/$LIB/include/boost" && ! -e "boost" ]]; then
+        echo "Creating boost/ symlink for coverage paths..."
+        ln -s "libs/$LIB/include/boost" boost
+    fi
 else
     # Clone all submodules (slower but complete)
     echo "Cloning all submodules (this may take a while)..."
