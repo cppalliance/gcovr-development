@@ -98,6 +98,52 @@ def get_coverage_class(coverage):
         return 'coverage-unknown'
 
 
+def clean_path(name):
+    """Remove relative path prefixes like '../../../' from a path.
+
+    Returns the cleaned path preserving directory structure.
+    E.g., '../../detail/impl/foo.hpp' -> 'detail/impl/foo.hpp'
+    """
+    name = name.rstrip('/')
+
+    # Remove leading ./ or ../
+    while name.startswith('./') or name.startswith('../'):
+        if name.startswith('./'):
+            name = name[2:]
+        elif name.startswith('../'):
+            name = name[3:]
+
+    return name if name else 'unknown'
+
+
+def clean_display_name(name):
+    """Extract clean display name from path.
+
+    Removes relative path prefixes like '../../../' and extracts
+    just the filename or last meaningful path segment.
+    """
+    # First clean the path
+    name = clean_path(name)
+
+    # If it still contains slashes, get the last segment
+    if '/' in name:
+        name = name.split('/')[-1]
+
+    # Fallback if empty
+    return name if name else 'unknown'
+
+
+def is_file_path(path):
+    """Check if a path looks like a file (has a file extension).
+
+    More reliable than gcovr's directory class detection for paths with '../'.
+    """
+    # Clean the path first
+    clean = clean_path(path)
+    # Check for common source file extensions
+    return bool(re.search(r'\.(hpp|ipp|cpp|h|c|cc|cxx|hxx|tpp|inl)$', clean, re.IGNORECASE))
+
+
 def build_tree(output_dir):
     """Build complete tree structure by following links recursively."""
     output_path = Path(output_dir)
@@ -110,7 +156,49 @@ def build_tree(output_dir):
         entries = parse_html_file(html_file)
         file_entries[html_file.name] = entries
 
-    def build_node_from_file(html_filename, visited=None):
+    def add_to_tree(nodes, path_parts, entry_data, base_path=''):
+        """Add an entry to the tree, creating intermediate directories as needed."""
+        if not path_parts:
+            return
+
+        name = path_parts[0]
+        remaining = path_parts[1:]
+        current_full_path = base_path + '/' + name if base_path else name
+
+        # Find existing node for this level
+        existing = None
+        for node in nodes:
+            if node.get('name') == name:
+                existing = node
+                break
+
+        if remaining:
+            # This is an intermediate directory - create if needed
+            if not existing:
+                existing = {
+                    'name': name,
+                    'fullPath': current_full_path,
+                    'coverage': '-',
+                    'coverageClass': 'coverage-unknown',
+                    'isDirectory': True,
+                    'link': None,
+                    'children': []
+                }
+                nodes.append(existing)
+            # Recurse into children
+            add_to_tree(existing['children'], remaining, entry_data, current_full_path)
+        else:
+            # This is the final entry (file or directory)
+            if existing:
+                # Update existing node with entry data (preserve children)
+                children = existing.get('children', [])
+                existing.update(entry_data)
+                if children and not existing.get('children'):
+                    existing['children'] = children
+            else:
+                nodes.append(entry_data)
+
+    def build_node_from_file(html_filename, current_path='', visited=None):
         """Recursively build tree from HTML file."""
         if visited is None:
             visited = set()
@@ -123,13 +211,26 @@ def build_tree(output_dir):
         nodes = []
 
         for entry in entries:
-            name = entry['name']
-            is_dir = entry['is_dir'] or '.' not in name
+            raw_name = entry['name']
+            cleaned_path = clean_path(raw_name)
+            display_name = clean_display_name(raw_name)
+            is_dir = not is_file_path(raw_name) and (entry['is_dir'] or '.' not in display_name)
             coverage = entry['coverage']
             link = entry['link']
 
-            node = {
-                'name': name,
+            # Calculate relative path from current directory
+            if current_path and cleaned_path.startswith(current_path + '/'):
+                relative_path = cleaned_path[len(current_path) + 1:]
+            elif current_path and cleaned_path == current_path:
+                relative_path = display_name
+            else:
+                relative_path = cleaned_path
+
+            path_parts = relative_path.split('/') if '/' in relative_path else [display_name]
+
+            node_data = {
+                'name': path_parts[-1] if path_parts else display_name,
+                'fullPath': cleaned_path,
                 'coverage': coverage,
                 'coverageClass': get_coverage_class(coverage),
                 'isDirectory': is_dir,
@@ -139,12 +240,22 @@ def build_tree(output_dir):
 
             # If directory with a link, recursively get its children
             if is_dir and link and link in file_entries:
-                node['children'] = build_node_from_file(link, visited.copy())
+                node_data['children'] = build_node_from_file(link, cleaned_path, visited.copy())
 
-            nodes.append(node)
+            # Add to tree, creating intermediate directories if needed
+            if len(path_parts) > 1:
+                add_to_tree(nodes, path_parts, node_data)
+            else:
+                nodes.append(node_data)
 
         # Sort: directories first, then files, alphabetically
-        nodes.sort(key=lambda x: (not x['isDirectory'], x['name'].lower()))
+        def sort_nodes(node_list):
+            node_list.sort(key=lambda x: (not x['isDirectory'], x['name'].lower()))
+            for n in node_list:
+                if n.get('children'):
+                    sort_nodes(n['children'])
+
+        sort_nodes(nodes)
         return nodes
 
     # Start from index.html
@@ -163,9 +274,12 @@ def inject_tree_data(output_dir, tree):
             with open(html_file, 'r', encoding='utf-8') as f:
                 content = f.read()
 
-            # Check if already injected (look for the actual data, not just the var name)
-            if 'window.GCOVR_TREE_DATA=[' in content or 'window.GCOVR_TREE_DATA={' in content:
-                continue
+            # Remove any existing GCOVR_TREE_DATA injection (from previous runs)
+            content = re.sub(
+                r'<script>window\.GCOVR_TREE_DATA=.*?;</script>\n?',
+                '',
+                content
+            )
 
             # Inject before </body>
             if '</body>' in content:

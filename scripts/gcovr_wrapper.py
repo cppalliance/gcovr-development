@@ -1,4 +1,4 @@
-#!/opt/homebrew/Cellar/gcovr/8.6/libexec/bin/python
+#!/usr/bin/env python3
 """
 Wrapper for gcovr that registers .ipp files as C++ for syntax highlighting.
 """

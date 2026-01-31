@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  gcovr-dev:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      # Mount output directory to get the .info files
+      - ./output:/output
+      # Optional: mount boost-root to cache the build (faster rebuilds)
+      # - ./docker-boost-root:/workspace/boost-root
+    environment:
+      - SELF=json
+      - B2_TOOLSET=gcc-13
+      - GCOV=gcov-13

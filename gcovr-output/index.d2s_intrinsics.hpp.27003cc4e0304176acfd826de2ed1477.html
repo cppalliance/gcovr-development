@@ -1,0 +1,4456 @@
+<!DOCTYPE html>
+<html class="theme-green">
+
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>detail/ryu/detail/d2s_intrinsics.hpp - GCC Code Coverage Report</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <style type="text/css">
+/* ===========================================
+   GCOVR Custom Dark Theme with Sidebar
+   =========================================== */
+
+@charset "utf-8";
+
+:root {
+  /* Dark theme colors */
+  --bg-primary: #0d1117;
+  --bg-secondary: #161b22;
+  --bg-tertiary: #21262d;
+  --bg-hover: #30363d;
+  --bg-active: #388bfd26;
+
+  --text-primary: #e6edf3;
+  --text-secondary: #8b949e;
+  --text-muted: #6e7681;
+
+  --border-color: #30363d;
+  --border-muted: #21262d;
+
+  /* Accent colors */
+  --accent-blue: #58a6ff;
+  --accent-green: #3fb950;
+  --accent-yellow: #d29922;
+  --accent-red: #f85149;
+  --accent-purple: #a371f7;
+
+  /* Coverage colors */
+  --coverage-high: #3fb950;
+  --coverage-high-bg: rgba(63, 185, 80, 0.15);
+  --coverage-medium: #d29922;
+  --coverage-medium-bg: rgba(210, 153, 34, 0.15);
+  --coverage-low: #f85149;
+  --coverage-low-bg: rgba(248, 81, 73, 0.15);
+  --coverage-unknown: #6e7681;
+
+  /* Spacing */
+  --sidebar-width: 280px;
+  --header-height: 56px;
+
+  /* Fonts */
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', Consolas, 'Liberation Mono', Menlo, monospace;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 6px;
+  --radius-lg: 8px;
+
+  /* Transitions */
+  --transition-fast: 0.15s ease;
+  --transition-normal: 0.25s ease;
+}
+
+/* Light Mode */
+[data-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #eaeef2;
+  --bg-hover: #d0d7de;
+  --bg-active: rgba(84, 174, 255, 0.15);
+
+  --text-primary: #1f2328;
+  --text-secondary: #656d76;
+  --text-muted: #8c959f;
+
+  --border-color: #d0d7de;
+  --border-muted: #eaeef2;
+
+  --accent-blue: #0969da;
+  --accent-green: #1a7f37;
+  --accent-yellow: #9a6700;
+  --accent-red: #cf222e;
+  --accent-purple: #8250df;
+
+  --coverage-high: #1a7f37;
+  --coverage-high-bg: rgba(26, 127, 55, 0.15);
+  --coverage-medium: #9a6700;
+  --coverage-medium-bg: rgba(154, 103, 0, 0.15);
+  --coverage-low: #cf222e;
+  --coverage-low-bg: rgba(207, 34, 46, 0.15);
+}
+
+/* Smooth theme transitions */
+body, .sidebar, .main-content, .main-header, .main-footer,
+.sidebar-header, .sidebar-nav, .sidebar-footer,
+.summary-card, .file-list-container, .source-container,
+.tree-item-header, .coverage-badge, .tree-coverage,
+.btn, .nav-link, input {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+
+/* Coverage class colors */
+.coverage-high { color: var(--coverage-high) !important; }
+.coverage-medium { color: var(--coverage-medium) !important; }
+.coverage-low, .coverage-none { color: var(--coverage-low) !important; }
+.coverage-unknown { color: var(--coverage-unknown) !important; }
+
+/* Reset */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--text-primary);
+  background: var(--bg-primary);
+  overflow-x: hidden;
+}
+
+a {
+  color: var(--accent-blue);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+}
+
+a:hover {
+  color: #79c0ff;
+  text-decoration: underline;
+}
+
+/* ===========================================
+   App Layout
+   =========================================== */
+
+.app-container {
+  display: flex;
+  min-height: 100vh;
+}
+
+/* ===========================================
+   Sidebar
+   =========================================== */
+
+.sidebar {
+  position: fixed;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: var(--sidebar-width);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  z-index: 100;
+  transition: transform var(--transition-normal);
+}
+
+.sidebar.collapsed {
+  transform: translateX(-100%);
+}
+
+.sidebar-header {
+  padding: 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.sidebar-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.sidebar-title-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.sidebar-title-link:hover {
+  color: var(--accent-blue);
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-primary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Theme Toggle */
+.theme-toggle {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.theme-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--text-muted);
+}
+
+.theme-toggle svg {
+  width: 16px;
+  height: 16px;
+}
+
+.theme-toggle .icon-sun { display: none; }
+.theme-toggle .icon-moon { display: block; }
+
+[data-theme="light"] .theme-toggle .icon-sun { display: block; }
+[data-theme="light"] .theme-toggle .icon-moon { display: none; }
+
+.sidebar-search {
+  position: relative;
+}
+
+.sidebar-search input {
+  width: 100%;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: 13px;
+  outline: none;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.sidebar-search input:focus {
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+}
+
+.sidebar-search input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Tree Controls */
+.tree-controls {
+  display: flex;
+  gap: 8px;
+  padding: 8px 16px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tree-control-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 11px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.tree-control-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.tree-control-btn svg {
+  width: 12px;
+  height: 12px;
+}
+
+.sidebar-nav {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 8px 0;
+}
+
+.sidebar-footer {
+  padding: 12px 16px;
+  border-top: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.coverage-summary-mini {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.coverage-badge {
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 13px;
+}
+
+.coverage-badge.coverage-high {
+  background: var(--coverage-high-bg);
+}
+
+.coverage-badge.coverage-medium {
+  background: var(--coverage-medium-bg);
+}
+
+.coverage-badge.coverage-low {
+  background: var(--coverage-low-bg);
+}
+
+.coverage-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+}
+
+/* Tree View */
+.tree-loading {
+  padding: 16px;
+  color: var(--text-muted);
+  font-size: 13px;
+}
+
+.tree-item {
+  user-select: none;
+}
+
+.tree-item-header {
+  display: flex;
+  align-items: center;
+  padding: 2px 12px 2px 8px;
+  cursor: pointer;
+  transition: background var(--transition-fast);
+  gap: 4px;
+  /* Extend background full width */
+  margin-left: -200px;
+  padding-left: 208px;
+  margin-right: -12px;
+  padding-right: 24px;
+}
+
+.tree-item-header:hover {
+  background: var(--bg-hover);
+}
+
+.tree-item-header.active,
+.tree-item.active > .tree-item-header {
+  background: var(--bg-active);
+}
+
+.tree-item.active > .tree-item-header .tree-label {
+  color: var(--accent-blue);
+  font-weight: 500;
+}
+
+/* Folder toggle button (+/-) - minimal style */
+.tree-folder-toggle {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11px;
+  font-weight: 400;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: color var(--transition-fast);
+  text-decoration: none;
+  line-height: 1;
+  margin-right: 2px;
+  padding: 0;
+}
+
+.tree-folder-toggle:hover {
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+/* Spacer for files (no toggle) */
+.tree-spacer {
+  width: 20px;
+  flex-shrink: 0;
+}
+
+/* Legacy toggle classes */
+.tree-toggle {
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
+  font-family: var(--font-mono);
+  flex-shrink: 0;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.tree-toggle:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  border-color: var(--accent-blue);
+  text-decoration: none;
+}
+
+.tree-toggle .toggle-icon {
+  display: block;
+  color: var(--text-primary);
+  font-size: 14px;
+  line-height: 1;
+}
+
+.tree-toggle-spacer {
+  width: 18px;
+  flex-shrink: 0;
+}
+
+.tree-item.no-children .tree-toggle {
+  visibility: hidden;
+}
+
+.tree-icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.tree-icon-folder {
+  color: var(--accent-blue);
+}
+
+.tree-icon-file {
+  color: var(--text-muted);
+}
+
+/* Legacy classes */
+.tree-icon.folder {
+  color: var(--accent-blue);
+}
+
+.tree-icon.file {
+  color: var(--text-secondary);
+}
+
+.tree-label {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.tree-coverage {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+  flex-shrink: 0;
+}
+
+.tree-coverage.coverage-high {
+  background: var(--coverage-high-bg);
+}
+
+.tree-coverage.coverage-medium {
+  background: var(--coverage-medium-bg);
+}
+
+.tree-coverage.coverage-low {
+  background: var(--coverage-low-bg);
+}
+
+.tree-children {
+  display: none;
+  margin-left: 20px;
+  position: relative;
+}
+
+.tree-item.expanded > .tree-children {
+  display: block;
+}
+
+.tree-children-inner {
+  /* Animation support */
+}
+
+
+/* ===========================================
+   Main Content
+   =========================================== */
+
+.main-content {
+  flex: 1;
+  margin-left: var(--sidebar-width);
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  transition: margin-left var(--transition-normal);
+}
+
+.sidebar.collapsed + .main-content {
+  margin-left: 0;
+}
+
+.main-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 12px 24px;
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-color);
+  height: var(--header-height);
+}
+
+.sidebar-toggle {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.sidebar-toggle:hover {
+  background: var(--bg-hover);
+}
+
+.sidebar-toggle span {
+  display: block;
+  height: 2px;
+  background: var(--text-secondary);
+  border-radius: 1px;
+  transition: background var(--transition-fast);
+}
+
+.sidebar-toggle:hover span {
+  background: var(--text-primary);
+}
+
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  flex-wrap: nowrap;
+  font-size: 14px;
+  color: var(--text-secondary);
+  white-space: nowrap;
+}
+
+.breadcrumb a,
+.breadcrumb span {
+  display: inline;
+  white-space: nowrap;
+}
+
+.breadcrumb a {
+  color: var(--text-secondary);
+}
+
+.breadcrumb a:hover {
+  color: var(--accent-blue);
+}
+
+.breadcrumb .separator {
+  color: var(--text-muted);
+  padding: 0 6px;
+}
+
+.breadcrumb .current {
+  color: var(--text-primary);
+}
+
+.header-actions {
+  margin-left: auto;
+}
+
+.content-wrapper {
+  flex: 1;
+  padding: 24px;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.main-footer {
+  padding: 24px;
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 12px;
+  border-top: 1px solid var(--border-color);
+}
+
+.main-footer a {
+  color: var(--text-muted);
+}
+
+/* ===========================================
+   Summary Cards
+   =========================================== */
+
+.summary-section {
+  margin-bottom: 24px;
+}
+
+.summary-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.summary-card {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.summary-card-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+}
+
+.summary-card-header h3 {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.summary-card-body {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.coverage-ring {
+  position: relative;
+  width: 72px;
+  height: 72px;
+  flex-shrink: 0;
+}
+
+.coverage-ring svg {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.coverage-ring .ring-bg {
+  fill: none;
+  stroke: var(--bg-tertiary);
+  stroke-width: 3;
+}
+
+.coverage-ring .ring-fill {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 3;
+  stroke-linecap: round;
+  transition: stroke-dasharray var(--transition-normal);
+}
+
+.coverage-ring.coverage-high .ring-fill { stroke: var(--coverage-high); }
+.coverage-ring.coverage-medium .ring-fill { stroke: var(--coverage-medium); }
+.coverage-ring.coverage-low .ring-fill { stroke: var(--coverage-low); }
+
+.coverage-ring .ring-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.summary-stats {
+  flex: 1;
+}
+
+.stat-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 4px 0;
+  font-size: 13px;
+}
+
+.stat-row .stat-label {
+  color: var(--text-secondary);
+}
+
+.stat-row .stat-value {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.coverage-legend {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.legend-item {
+  padding: 4px 12px;
+  border-radius: var(--radius-sm);
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.legend-item.coverage-high {
+  background: var(--coverage-high-bg);
+  color: var(--coverage-high);
+}
+
+.legend-item.coverage-medium {
+  background: var(--coverage-medium-bg);
+  color: var(--coverage-medium);
+}
+
+.legend-item.coverage-low {
+  background: var(--coverage-low-bg);
+  color: var(--coverage-low);
+}
+
+/* ===========================================
+   File List
+   =========================================== */
+
+.file-list-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.file-list-header {
+  display: grid;
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px 100px;
+  gap: 8px;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.file-list-header > div {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.file-list-header .sortable {
+  cursor: pointer;
+  user-select: none;
+}
+
+.file-list-header .sortable:hover {
+  color: var(--text-primary);
+}
+
+.file-list-header .sorted-ascending::after {
+  content: ' ↑';
+}
+
+.file-list-header .sorted-descending::after {
+  content: ' ↓';
+}
+
+.file-row {
+  display: grid;
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px 100px;
+  gap: 8px;
+  padding: 4px 16px;
+  border-bottom: 1px solid var(--border-muted);
+  align-items: center;
+  transition: background var(--transition-fast);
+}
+
+.file-row:last-child {
+  border-bottom: none;
+}
+
+.file-row:hover {
+  background: var(--bg-hover);
+}
+
+/* Adjust grid when columns are hidden */
+.no-functions.no-branches .file-list-header,
+.no-functions.no-branches .file-row {
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px;
+}
+
+.no-functions:not(.no-branches) .file-list-header,
+.no-functions:not(.no-branches) .file-row {
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px;
+}
+
+.no-branches:not(.no-functions) .file-list-header,
+.no-branches:not(.no-functions) .file-row {
+  grid-template-columns: minmax(200px, 2fr) minmax(150px, 1fr) 100px 100px;
+}
+
+.file-row:nth-child(even) {
+  background: rgba(56, 139, 253, 0.03);
+}
+
+.file-row:nth-child(even):hover {
+  background: var(--bg-hover);
+}
+
+.col-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.file-icon {
+  flex-shrink: 0;
+  color: var(--text-muted);
+}
+
+.file-icon svg {
+  display: block;
+}
+
+.file-row.directory .file-icon {
+  color: var(--accent-blue);
+}
+
+.col-name a {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.col-name .no-link {
+  color: var(--text-secondary);
+}
+
+.col-coverage {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.coverage-bar-container {
+  flex: 1;
+  height: 6px;
+  background: var(--bg-tertiary);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.coverage-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width var(--transition-normal);
+}
+
+.coverage-bar.coverage-high { background: var(--coverage-high); }
+.coverage-bar.coverage-medium { background: var(--coverage-medium); }
+.coverage-bar.coverage-low { background: var(--coverage-low); }
+
+.coverage-percent {
+  font-weight: 600;
+  font-size: 13px;
+  min-width: 48px;
+  text-align: right;
+}
+
+.col-lines, .col-functions, .col-branches {
+  text-align: right;
+  font-size: 13px;
+}
+
+.file-list-header .col-lines,
+.file-list-header .col-functions,
+.file-list-header .col-branches {
+  justify-content: flex-end;
+}
+
+.stat-value {
+  font-weight: 500;
+}
+
+.stat-separator {
+  color: var(--text-muted);
+  margin: 0 2px;
+}
+
+.stat-total {
+  color: var(--text-secondary);
+}
+
+/* ===========================================
+   Source Code View
+   =========================================== */
+
+.source-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.source-info h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
+
+.source-stats {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.source-stats .stat {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.source-stats .stat strong {
+  margin-right: 4px;
+}
+
+.source-controls {
+  display: flex;
+  gap: 8px;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 13px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.btn.btn-sm {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn-count {
+  font-weight: 600;
+}
+
+.btn-toggle {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.btn-toggle.show_coveredLine,
+.btn-toggle.show_uncoveredLine,
+.btn-toggle.show_partialCoveredLine,
+.btn-toggle.show_excludedLine {
+  text-decoration: none;
+  opacity: 1;
+}
+
+.color-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.color-dot.covered { background: var(--coverage-high); }
+.color-dot.uncovered { background: var(--coverage-low); }
+
+.source-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.source-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.source-title {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.source-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.source-table-container {
+  overflow-x: auto;
+}
+
+.source-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.source-table thead {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.source-table th {
+  padding: 8px 12px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+  white-space: nowrap;
+}
+
+.source-table th.col-lineno,
+.source-table th.col-count,
+.source-table th.col-branch {
+  text-align: right;
+}
+
+.source-table td {
+  padding: 0 12px;
+  vertical-align: top;
+  border-bottom: 1px solid var(--border-muted);
+}
+
+.source-table .col-lineno {
+  background: var(--bg-tertiary);
+  border-right: 1px solid var(--border-color);
+  text-align: right;
+  user-select: none;
+  width: 60px;
+}
+
+.source-table .col-lineno a {
+  color: var(--text-muted);
+  text-decoration: none;
+  display: block;
+  padding: 2px 0;
+}
+
+.source-table .col-lineno a:hover {
+  color: var(--accent-blue);
+}
+
+.source-table .col-branch,
+.source-table .col-condition,
+.source-table .col-decision,
+.source-table .col-call {
+  background: var(--bg-tertiary);
+  border-right: 1px solid var(--border-color);
+  text-align: center;
+  width: 60px;
+}
+
+.source-table .col-count {
+  text-align: right;
+  width: 60px;
+  color: var(--text-muted);
+}
+
+.source-table .col-source {
+  white-space: pre;
+  padding-left: 16px;
+}
+
+/* Line coverage highlighting */
+.source-line.coveredLine.show_coveredLine td.col-source,
+.source-line.coveredLine.show_coveredLine td.col-count {
+  background: var(--coverage-high-bg);
+}
+
+.source-line.uncoveredLine.show_uncoveredLine td.col-source,
+.source-line.uncoveredLine.show_uncoveredLine td.col-count {
+  background: var(--coverage-low-bg);
+}
+
+.source-line.partialCoveredLine.show_partialCoveredLine td.col-source,
+.source-line.partialCoveredLine.show_partialCoveredLine td.col-count {
+  background: var(--coverage-medium-bg);
+}
+
+.source-line.excludedLine.show_excludedLine td.col-source,
+.source-line.excludedLine.show_excludedLine td.col-count {
+  background: rgba(110, 118, 129, 0.15);
+}
+
+.hit-miss {
+  color: var(--coverage-low);
+  font-weight: bold;
+}
+
+.hit-excluded {
+  color: var(--text-muted);
+}
+
+/* Branch/condition popup */
+.branch-details, .condition-details, .decision-details, .call-details {
+  position: relative;
+}
+
+.branch-summary, .condition-summary, .decision-summary, .call-summary {
+  cursor: pointer;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+}
+
+.branch-summary:hover, .condition-summary:hover, .decision-summary:hover, .call-summary:hover {
+  background: var(--bg-hover);
+}
+
+.branch-popup, .condition-popup, .decision-popup, .call-popup {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 100;
+  min-width: 250px;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.function-name {
+  font-weight: 600;
+  color: var(--accent-blue);
+  margin-bottom: 4px;
+}
+
+.branch-taken, .condition-covered, .decision-taken, .call-invoked {
+  color: var(--coverage-high);
+}
+
+.branch-not-taken, .condition-not-covered, .decision-not-taken, .call-not-invoked {
+  color: var(--coverage-low);
+}
+
+.branch-excluded, .condition-excluded, .decision-uncheckable, .call-excluded {
+  color: var(--text-muted);
+}
+
+/* ===========================================
+   Navigation
+   =========================================== */
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: 13px;
+  transition: all var(--transition-fast);
+}
+
+.nav-link:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+  text-decoration: none;
+}
+
+.nav-link svg {
+  flex-shrink: 0;
+}
+
+/* ===========================================
+   Functions Page
+   =========================================== */
+
+.summary-inline {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 16px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  margin-bottom: 24px;
+}
+
+.summary-inline .summary-stat {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.summary-inline .stat-label {
+  color: var(--text-secondary);
+  font-size: 13px;
+}
+
+.summary-inline .stat-value {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.summary-inline .stat-detail {
+  color: var(--text-muted);
+  font-size: 12px;
+}
+
+.functions-container {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+
+.functions-header {
+  display: grid;
+  grid-template-columns: 2fr 120px 80px 80px;
+  gap: 16px;
+  padding: 12px 16px;
+  background: var(--bg-tertiary);
+  border-bottom: 1px solid var(--border-color);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+}
+
+.function-row {
+  display: grid;
+  grid-template-columns: 2fr 120px 80px 80px;
+  gap: 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border-muted);
+  align-items: center;
+  transition: background var(--transition-fast);
+}
+
+.function-row:hover {
+  background: var(--bg-hover);
+}
+
+.function-row .col-function a {
+  display: block;
+}
+
+.function-name {
+  font-weight: 500;
+  display: block;
+}
+
+.function-location {
+  font-size: 11px;
+  color: var(--text-muted);
+}
+
+.function-row .excluded {
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.function-row .not-called {
+  color: var(--coverage-low);
+}
+
+.function-row .called {
+  color: var(--coverage-high);
+  font-weight: 500;
+}
+
+/* ===========================================
+   Responsive
+   =========================================== */
+
+@media (max-width: 1024px) {
+  .sidebar {
+    transform: translateX(-100%);
+  }
+
+  .sidebar.open {
+    transform: translateX(0);
+  }
+
+  .main-content {
+    margin-left: 0;
+  }
+
+  .file-list-header,
+  .file-row {
+    grid-template-columns: 1fr 120px 80px;
+  }
+
+  .col-functions,
+  .col-branches {
+    display: none;
+  }
+}
+
+@media (max-width: 768px) {
+  .content-wrapper {
+    padding: 16px;
+  }
+
+  .summary-cards {
+    grid-template-columns: 1fr;
+  }
+
+  .file-list-header,
+  .file-row {
+    grid-template-columns: 1fr 100px;
+  }
+
+  .col-lines {
+    display: none;
+  }
+
+  .source-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
+
+/* ===========================================
+   Syntax Highlighting (Dark Theme)
+   =========================================== */
+
+/* Dark theme syntax highlighting */
+.c { color: #8b949e; font-style: italic; } /* Comment */
+.k { color: #ff7b72; font-weight: bold; } /* Keyword */
+.o { color: #79c0ff; } /* Operator */
+.cm { color: #8b949e; font-style: italic; } /* Comment.Multiline */
+.cp { color: #d29922; } /* Comment.Preproc */
+.c1 { color: #8b949e; font-style: italic; } /* Comment.Single */
+.cs { color: #8b949e; font-weight: bold; } /* Comment.Special */
+.gd { color: #f85149; } /* Generic.Deleted */
+.gi { color: #3fb950; } /* Generic.Inserted */
+.kc { color: #79c0ff; } /* Keyword.Constant */
+.kd { color: #ff7b72; } /* Keyword.Declaration */
+.kn { color: #ff7b72; } /* Keyword.Namespace */
+.kt { color: #ffa657; } /* Keyword.Type */
+.m { color: #a5d6ff; } /* Literal.Number */
+.s { color: #a5d6ff; } /* Literal.String */
+.na { color: #79c0ff; } /* Name.Attribute */
+.nb { color: #ffa657; } /* Name.Builtin */
+.nc { color: #ffa657; font-weight: bold; } /* Name.Class */
+.nf { color: #d2a8ff; } /* Name.Function */
+.nn { color: #ffa657; } /* Name.Namespace */
+.nt { color: #7ee787; } /* Name.Tag */
+.nv { color: #79c0ff; } /* Name.Variable */
+.ow { color: #ff7b72; font-weight: bold; } /* Operator.Word */
+.s1 { color: #a5d6ff; } /* Literal.String.Single */
+.s2 { color: #a5d6ff; } /* Literal.String.Double */
+
+/* Light theme syntax highlighting */
+[data-theme="light"] .c { color: #6e7781; }
+[data-theme="light"] .k { color: #cf222e; }
+[data-theme="light"] .o { color: #0550ae; }
+[data-theme="light"] .cm { color: #6e7781; }
+[data-theme="light"] .cp { color: #9a6700; }
+[data-theme="light"] .c1 { color: #6e7781; }
+[data-theme="light"] .cs { color: #6e7781; }
+[data-theme="light"] .gd { color: #cf222e; }
+[data-theme="light"] .gi { color: #1a7f37; }
+[data-theme="light"] .kc { color: #0550ae; }
+[data-theme="light"] .kd { color: #cf222e; }
+[data-theme="light"] .kn { color: #cf222e; }
+[data-theme="light"] .kt { color: #953800; }
+[data-theme="light"] .m { color: #0550ae; }
+[data-theme="light"] .s { color: #0a3069; }
+[data-theme="light"] .na { color: #0550ae; }
+[data-theme="light"] .nb { color: #953800; }
+[data-theme="light"] .nc { color: #953800; }
+[data-theme="light"] .nf { color: #8250df; }
+[data-theme="light"] .nn { color: #953800; }
+[data-theme="light"] .nt { color: #1a7f37; }
+[data-theme="light"] .nv { color: #0550ae; }
+[data-theme="light"] .ow { color: #cf222e; }
+[data-theme="light"] .s1 { color: #0a3069; }
+[data-theme="light"] .s2 { color: #0a3069; }
+
+/* ===========================================
+   Scrollbar
+   =========================================== */
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--bg-hover);
+}
+
+/* Button toggle classes for gcovr compatibility */
+.button_toggle_coveredLine,
+.button_toggle_uncoveredLine,
+.button_toggle_partialCoveredLine,
+.button_toggle_excludedLine {
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+
+.button_toggle_coveredLine.show_coveredLine,
+.button_toggle_uncoveredLine.show_uncoveredLine,
+.button_toggle_partialCoveredLine.show_partialCoveredLine,
+.button_toggle_excludedLine.show_excludedLine {
+  text-decoration: none;
+  opacity: 1;
+}    </style>
+    <script>
+/* GCOVR Custom JavaScript - Tree View & Interactivity */
+
+(function() {
+  'use strict';
+
+  // Wait for DOM ready
+  document.addEventListener('DOMContentLoaded', function() {
+    initTheme();
+    initSidebar();
+    initFileTree();
+    initBreadcrumbs();
+    initSearch();
+    initSorting();
+    initToggleButtons();
+    initTreeControls();
+  });
+
+  // ===========================================
+  // Breadcrumb Links
+  // ===========================================
+
+  function initBreadcrumbs() {
+    var currentSpan = document.querySelector('.breadcrumb .current');
+    if (!currentSpan || !window.GCOVR_TREE_DATA) return;
+
+    var pathText = currentSpan.textContent.trim();
+    var segments = pathText.split(' / ');
+    if (segments.length <= 1) return;
+
+    // Auto-detect and skip prefix segments not in tree (e.g., "boost", "json")
+    // Find the first segment that matches a root node in the tree
+    var startIndex = 0;
+    var rootNames = window.GCOVR_TREE_DATA.map(function(n) { return n.name; });
+    for (var i = 0; i < segments.length; i++) {
+      if (rootNames.indexOf(segments[i]) !== -1) {
+        startIndex = i;
+        break;
+      }
+    }
+    // Skip prefix segments
+    segments = segments.slice(startIndex);
+    if (segments.length === 0) return;
+
+    // Create linked breadcrumb by traversing tree
+    var fragment = document.createDocumentFragment();
+    var currentNodes = window.GCOVR_TREE_DATA;
+
+    for (var i = 0; i < segments.length; i++) {
+      var segment = segments[i];
+
+      if (i > 0) {
+        var sep = document.createElement('span');
+        sep.className = 'separator';
+        sep.textContent = '/';
+        fragment.appendChild(sep);
+      }
+
+      // Find this segment in current level of tree
+      var foundNode = null;
+      for (var j = 0; j < currentNodes.length; j++) {
+        if (currentNodes[j].name === segment) {
+          foundNode = currentNodes[j];
+          break;
+        }
+      }
+
+      if (foundNode && foundNode.link && i < segments.length - 1) {
+        // Directory segment with link - make it clickable
+        var a = document.createElement('a');
+        a.href = foundNode.link;
+        a.textContent = segment;
+        fragment.appendChild(a);
+        // Move to children for next iteration
+        currentNodes = foundNode.children || [];
+      } else {
+        // Last segment (current file) or no link found
+        var span = document.createElement('span');
+        span.className = 'current-file';
+        span.textContent = segment;
+        fragment.appendChild(span);
+        if (foundNode && foundNode.children) {
+          currentNodes = foundNode.children;
+        }
+      }
+    }
+
+    currentSpan.innerHTML = '';
+    currentSpan.appendChild(fragment);
+  }
+
+  // ===========================================
+  // Theme Toggle
+  // ===========================================
+
+  function initTheme() {
+    const toggle = document.getElementById('theme-toggle');
+    const savedTheme = localStorage.getItem('gcovr-theme');
+
+    // Apply saved theme or default to dark
+    if (savedTheme) {
+      document.documentElement.setAttribute('data-theme', savedTheme);
+    }
+
+    if (toggle) {
+      toggle.addEventListener('click', function() {
+        const current = document.documentElement.getAttribute('data-theme');
+        const next = current === 'light' ? 'dark' : 'light';
+        document.documentElement.setAttribute('data-theme', next);
+        localStorage.setItem('gcovr-theme', next);
+      });
+    }
+  }
+
+  // ===========================================
+  // Tree Controls (Expand/Collapse All)
+  // ===========================================
+
+  function initTreeControls() {
+    var expandBtn = document.getElementById('expand-all');
+    var collapseBtn = document.getElementById('collapse-all');
+
+    if (expandBtn) {
+      expandBtn.addEventListener('click', function() {
+        document.querySelectorAll('.tree-item').forEach(function(item) {
+          if (!item.classList.contains('no-children')) {
+            item.classList.add('expanded');
+            var toggle = item.querySelector(':scope > .tree-item-header > .tree-folder-toggle');
+            if (toggle) toggle.textContent = '−';
+          }
+        });
+      });
+    }
+
+    if (collapseBtn) {
+      collapseBtn.addEventListener('click', function() {
+        document.querySelectorAll('.tree-item').forEach(function(item) {
+          item.classList.remove('expanded');
+          var toggle = item.querySelector(':scope > .tree-item-header > .tree-folder-toggle');
+          if (toggle) toggle.textContent = '+';
+        });
+      });
+    }
+  }
+
+  // ===========================================
+  // Sidebar Toggle
+  // ===========================================
+
+  function initSidebar() {
+    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById('sidebar-toggle');
+
+    if (!sidebar || !toggle) return;
+
+    // Load saved state
+    const isCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+    if (isCollapsed) {
+      sidebar.classList.add('collapsed');
+    }
+
+    toggle.addEventListener('click', function() {
+      sidebar.classList.toggle('collapsed');
+      localStorage.setItem('sidebar-collapsed', sidebar.classList.contains('collapsed'));
+    });
+
+    // Mobile: open sidebar when clicked outside should close it
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth <= 1024) {
+        if (sidebar.classList.contains('open') &&
+            !sidebar.contains(e.target) &&
+            e.target !== toggle &&
+            !toggle.contains(e.target)) {
+          sidebar.classList.remove('open');
+        }
+      }
+    });
+
+    // Mobile toggle
+    toggle.addEventListener('click', function() {
+      if (window.innerWidth <= 1024) {
+        sidebar.classList.toggle('open');
+      }
+    });
+  }
+
+  // ===========================================
+  // File Tree - Load from tree.json
+  // ===========================================
+
+  function initFileTree() {
+    var treeContainer = document.getElementById('file-tree');
+    if (!treeContainer) return;
+
+    // Check for embedded tree data first (works for local file:// access)
+    if (window.GCOVR_TREE_DATA) {
+      renderTree(treeContainer, window.GCOVR_TREE_DATA);
+      return;
+    }
+
+    // Fallback: try to load tree.json for full hierarchy
+    fetch('tree.json')
+      .then(function(response) {
+        if (!response.ok) throw new Error('No tree.json');
+        return response.json();
+      })
+      .then(function(tree) {
+        renderTree(treeContainer, tree);
+      })
+      .catch(function(err) {
+        console.log('tree.json not found, using static sidebar');
+        // Keep existing static content from Jinja template
+      });
+  }
+
+  function renderTree(container, tree) {
+    container.innerHTML = '';
+
+    if (!tree || tree.length === 0) {
+      container.innerHTML = '<div class="tree-loading">No files found</div>';
+      return;
+    }
+
+    tree.forEach(function(item) {
+      container.appendChild(createTreeItem(item));
+    });
+
+    // Auto-expand to current file and highlight it
+    expandToCurrentFile(container);
+  }
+
+  function expandToCurrentFile(container) {
+    // Get current page filename
+    var currentPage = window.location.pathname.split('/').pop() || 'index.html';
+
+    // Find the link matching current page
+    var currentLink = container.querySelector('a[href="' + currentPage + '"]');
+    if (!currentLink) return;
+
+    // Mark as active
+    var treeItem = currentLink.closest('.tree-item');
+    if (treeItem) {
+      treeItem.classList.add('active');
+    }
+
+    // Expand all parent folders
+    var parent = currentLink.closest('.tree-children');
+    while (parent) {
+      var parentItem = parent.closest('.tree-item');
+      if (parentItem) {
+        parentItem.classList.add('expanded');
+        var toggle = parentItem.querySelector(':scope > .tree-item-header > .tree-folder-toggle');
+        if (toggle) toggle.textContent = '−';
+      }
+      parent = parentItem ? parentItem.parentElement.closest('.tree-children') : null;
+    }
+
+    // Scroll into view
+    if (currentLink) {
+      currentLink.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    }
+  }
+
+  function createTreeItem(item) {
+    var hasChildren = item.children && item.children.length > 0;
+    var isDirectory = item.isDirectory || hasChildren;
+
+    var div = document.createElement('div');
+    div.className = 'tree-item' + (isDirectory ? ' is-folder' : '') + (hasChildren ? '' : ' no-children');
+
+    var header = document.createElement('div');
+    header.className = 'tree-item-header';
+    var toggle = null;
+
+    // Toggle button (+/-) for folders with children
+    if (hasChildren) {
+      toggle = document.createElement('button');
+      toggle.className = 'tree-folder-toggle';
+      toggle.textContent = '+';
+      toggle.setAttribute('aria-label', 'Toggle folder');
+      toggle.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.preventDefault();
+        var isExpanded = div.classList.toggle('expanded');
+        toggle.textContent = isExpanded ? '−' : '+';
+      });
+      header.appendChild(toggle);
+
+      // Make entire header clickable to expand/collapse
+      header.style.cursor = 'pointer';
+      header.addEventListener('click', function(e) {
+        // Don't toggle if clicking a link
+        if (e.target.tagName === 'A') return;
+        e.preventDefault();
+        var isExpanded = div.classList.toggle('expanded');
+        toggle.textContent = isExpanded ? '−' : '+';
+      });
+    } else {
+      var spacer = document.createElement('span');
+      spacer.className = 'tree-spacer';
+      header.appendChild(spacer);
+    }
+
+    // Icon - different for folders vs files
+    var icon = document.createElement('span');
+    if (isDirectory) {
+      icon.className = 'tree-icon tree-icon-folder';
+      icon.innerHTML = '<svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"/></svg>';
+    } else {
+      icon.className = 'tree-icon tree-icon-file';
+      icon.innerHTML = '<svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M3.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 019 4.25V1.5H3.75zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-2.938-2.938zM2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z"/></svg>';
+    }
+    header.appendChild(icon);
+
+    // Label (with link if available)
+    // Use fullPath for tooltip if available, otherwise use name
+    var tooltipText = item.fullPath || item.name;
+    var label = document.createElement('span');
+    label.className = 'tree-label';
+    // Apply coverage class for coloring
+    if (item.coverageClass) {
+      label.classList.add(item.coverageClass);
+    }
+    label.title = tooltipText;
+    if (item.link) {
+      var link = document.createElement('a');
+      link.href = item.link;
+      link.textContent = item.name;
+      link.title = tooltipText;
+      label.appendChild(link);
+    } else {
+      label.textContent = item.name;
+    }
+    header.appendChild(label);
+
+    div.appendChild(header);
+
+    // Children container (for expand/collapse)
+    if (hasChildren) {
+      var childrenWrapper = document.createElement('div');
+      childrenWrapper.className = 'tree-children';
+
+      var childrenInner = document.createElement('div');
+      childrenInner.className = 'tree-children-inner';
+      item.children.forEach(function(child) {
+        childrenInner.appendChild(createTreeItem(child));
+      });
+
+      childrenWrapper.appendChild(childrenInner);
+      div.appendChild(childrenWrapper);
+    }
+
+    return div;
+  }
+
+  // ===========================================
+  // Search
+  // ===========================================
+
+  function initSearch() {
+    const searchInput = document.getElementById('file-search');
+    if (!searchInput) return;
+
+    searchInput.addEventListener('input', function() {
+      const query = this.value.toLowerCase().trim();
+      const treeItems = document.querySelectorAll('.tree-item');
+
+      treeItems.forEach(function(item) {
+        const label = item.querySelector('.tree-label');
+        if (label) {
+          const text = label.textContent.toLowerCase();
+          const matches = query === '' || text.includes(query);
+          item.style.display = matches ? '' : 'none';
+        }
+      });
+    });
+  }
+
+  // ===========================================
+  // Sorting
+  // ===========================================
+
+  function initSorting() {
+    const headers = document.querySelectorAll('.file-list-header .sortable, .functions-header .sortable');
+
+    headers.forEach(function(header) {
+      header.addEventListener('click', function() {
+        const sortKey = this.dataset.sort;
+        const isAscending = this.classList.contains('sorted-ascending');
+
+        // Remove sorted class from all headers
+        headers.forEach(function(h) {
+          h.classList.remove('sorted-ascending', 'sorted-descending');
+        });
+
+        // Toggle sort direction
+        this.classList.add(isAscending ? 'sorted-descending' : 'sorted-ascending');
+
+        // Sort the list
+        sortList(sortKey, !isAscending);
+      });
+    });
+  }
+
+  function sortList(key, ascending) {
+    const container = document.getElementById('file-list') || document.querySelector('.functions-body');
+    if (!container) return;
+
+    const rows = Array.from(container.children);
+
+    rows.sort(function(a, b) {
+      let aVal = a.dataset[key] || a.querySelector('[data-sort]')?.dataset.sort || '';
+      let bVal = b.dataset[key] || b.querySelector('[data-sort]')?.dataset.sort || '';
+
+      // Try to parse as numbers
+      const aNum = parseFloat(aVal);
+      const bNum = parseFloat(bVal);
+
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return ascending ? aNum - bNum : bNum - aNum;
+      }
+
+      // String comparison
+      return ascending ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
+    });
+
+    rows.forEach(function(row) {
+      container.appendChild(row);
+    });
+  }
+
+  // ===========================================
+  // Toggle Buttons (Coverage Lines)
+  // ===========================================
+
+  function initToggleButtons() {
+    const buttons = document.querySelectorAll('.button_toggle_coveredLine, .button_toggle_uncoveredLine, .button_toggle_partialCoveredLine, .button_toggle_excludedLine');
+
+    buttons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        const lineClass = this.value;
+        const showClass = 'show_' + lineClass;
+
+        // Toggle the button state
+        this.classList.toggle(showClass);
+
+        // Toggle visibility of lines
+        const lines = document.querySelectorAll('.' + lineClass);
+        lines.forEach(function(line) {
+          line.classList.toggle(showClass);
+        });
+      });
+    });
+
+    // Also handle simpler toggle buttons
+    const simpleToggles = document.querySelectorAll('.btn-toggle');
+    simpleToggles.forEach(function(button) {
+      button.addEventListener('click', function() {
+        // Use data attribute to get line class (persists after toggle)
+        const lineClass = this.dataset.lineClass;
+        if (!lineClass) return;
+
+        const showClass = 'show_' + lineClass;
+        this.classList.toggle(showClass);
+        const lines = document.querySelectorAll('.' + lineClass);
+        lines.forEach(function(line) {
+          line.classList.toggle(showClass);
+        });
+      });
+    });
+  }
+
+})();    </script>
+  </head>
+
+  <body>
+    <div class="app-container">
+      <!-- Sidebar -->
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+          <div class="sidebar-title-row">
+            <h2><a href="index.html" class="sidebar-title-link">Coverage Report</a></h2>
+            <button class="theme-toggle" id="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light mode">
+              <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+              </svg>
+              <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="5"></circle>
+                <line x1="12" y1="1" x2="12" y2="3"></line>
+                <line x1="12" y1="21" x2="12" y2="23"></line>
+                <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                <line x1="1" y1="12" x2="3" y2="12"></line>
+                <line x1="21" y1="12" x2="23" y2="12"></line>
+                <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+              </svg>
+            </button>
+          </div>
+          <div class="sidebar-search">
+            <input type="text" id="file-search" placeholder="Search files..." autocomplete="off">
+          </div>
+        </div>
+        <div class="tree-controls">
+          <button class="tree-control-btn" id="expand-all" title="Expand all">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 1a.5.5 0 01.5.5v5h5a.5.5 0 010 1h-5v5a.5.5 0 01-1 0v-5h-5a.5.5 0 010-1h5v-5A.5.5 0 018 1z"/></svg>
+            Expand
+          </button>
+          <button class="tree-control-btn" id="collapse-all" title="Collapse all">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M2 8a.5.5 0 01.5-.5h11a.5.5 0 010 1h-11A.5.5 0 012 8z"/></svg>
+            Collapse
+          </button>
+        </div>
+        <nav class="sidebar-nav" id="file-tree">
+<div class="tree-item">
+  <div class="tree-item-header">
+    <a href="index.html" class="tree-toggle" title="Back to directory">
+      <span class="toggle-icon">&larr;</span>
+    </a>
+    <span class="tree-icon folder">
+      <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M1.75 1A1.75 1.75 0 000 2.75v10.5C0 14.216.784 15 1.75 15h12.5A1.75 1.75 0 0016 13.25v-8.5A1.75 1.75 0 0014.25 3H7.5a.25.25 0 01-.2-.1l-.9-1.2C6.07 1.26 5.55 1 5 1H1.75z"></path></svg>
+    </span>
+    <a class="tree-label" href="index.html">Back to Index</a>
+  </div>
+</div>
+<div class="tree-item active">
+  <div class="tree-item-header">
+    <span class="tree-toggle-spacer"></span>
+    <span class="tree-icon file">
+      <svg viewBox="0 0 16 16" width="16" height="16"><path fill="currentColor" d="M3.75 1.5a.25.25 0 00-.25.25v12.5c0 .138.112.25.25.25h9.5a.25.25 0 00.25-.25V6h-2.75A1.75 1.75 0 019 4.25V1.5H3.75zm6.75.062V4.25c0 .138.112.25.25.25h2.688l-2.938-2.938zM2 1.75C2 .784 2.784 0 3.75 0h6.586c.464 0 .909.184 1.237.513l2.914 2.914c.329.328.513.773.513 1.237v9.586A1.75 1.75 0 0113.25 16h-9.5A1.75 1.75 0 012 14.25V1.75z"></path></svg>
+    </span>
+    <span class="tree-label">detail/ryu/detail/d2s_intrinsics.hpp</span>
+  </div>
+</div>
+        </nav>
+      </aside>
+
+      <!-- Main Content -->
+      <main class="main-content">
+        <header class="main-header">
+          <button class="sidebar-toggle" id="sidebar-toggle" title="Toggle sidebar">
+            <span></span>
+            <span></span>
+            <span></span>
+          </button>
+          <div class="breadcrumb">
+<a href="index.html">Root</a><span class="separator">/</span><span class="current">detail / ryu / detail / d2s_intrinsics.hpp</span>          </div>
+          <div class="header-actions">
+          </div>
+        </header>
+
+        <div class="content-wrapper">
+          <section class="summary-section">
+<div class="source-summary">
+  <div class="source-info">
+    <h2 class="source-filename">detail/ryu/detail/d2s_intrinsics.hpp</h2>
+    <div class="source-stats">
+      <span class="stat coverage-high">
+        <strong>100.0%</strong> Lines (28/28)
+      </span>
+      <span class="stat coverage-high">
+        <strong>100.0%</strong> Functions (9/9)
+      </span>
+      <span class="stat coverage-low">
+        <strong>66.7%</strong> Branches (4/6)
+      </span>
+    </div>
+  </div>
+
+  <div class="source-controls">
+    <button class="btn btn-toggle show_coveredLine" data-line-class="coveredLine" id="toggle-covered" title="Toggle covered lines">
+      <span class="color-dot covered"></span> Covered
+    </button>
+    <button class="btn btn-toggle show_uncoveredLine" data-line-class="uncoveredLine" id="toggle-uncovered" title="Toggle uncovered lines">
+      <span class="color-dot uncovered"></span> Uncovered
+    </button>
+  </div>
+</div>          </section>
+
+          <section class="main-section">
+<div class="source-container">
+  <div class="source-header">
+    <div class="source-title">detail/ryu/detail/d2s_intrinsics.hpp</div>
+    <div class="source-actions">
+      <button type="button" class="btn btn-sm button_toggle_coveredLine show_coveredLine" value="coveredLine" title="Toggle covered lines">
+        <span class="btn-count">28</span> covered
+      </button>
+      <button type="button" class="btn btn-sm button_toggle_uncoveredLine show_uncoveredLine" value="uncoveredLine" title="Toggle uncovered lines">
+        <span class="btn-count">0</span> uncovered
+      </button>
+    </div>
+  </div>
+
+  <div class="source-table-container">
+    <table class="source-table">
+      <thead>
+        <tr>
+          <th class="col-lineno">Line</th>
+          <th class="col-branch">Branch</th>
+          <th class="col-count">Hits</th>
+          <th class="col-source">Source Code</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l1" href="#l1">1</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Copyright 2018 Ulf Adams</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l2" href="#l2">2</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l3" href="#l3">3</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// The contents of this file may be used under the terms of the Apache License,</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l4" href="#l4">4</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Version 2.0.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l5" href="#l5">5</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l6" href="#l6">6</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//    (See accompanying file LICENSE-Apache or copy at</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l7" href="#l7">7</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//     http://www.apache.org/licenses/LICENSE-2.0)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l8" href="#l8">8</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l9" href="#l9">9</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Alternatively, the contents of this file may be used under the terms of</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l10" href="#l10">10</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// the Boost Software License, Version 1.0.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l11" href="#l11">11</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//    (See accompanying file LICENSE-Boost or copy at</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l12" href="#l12">12</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//     https://www.boost.org/LICENSE_1_0.txt)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l13" href="#l13">13</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l14" href="#l14">14</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Unless required by applicable law or agreed to in writing, this software</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l15" href="#l15">15</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// is distributed on an &quot;AS IS&quot; BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l16" href="#l16">16</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// KIND, either express or implied.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l17" href="#l17">17</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l18" href="#l18">18</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cm">/*</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l19" href="#l19">19</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cm">    This is a derivative work</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l20" href="#l20">20</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cm">*/</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l21" href="#l21">21</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l22" href="#l22">22</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#ifndef BOOST_JSON_DETAIL_RYU_DETAIL_D2S_INTRINSICS_HPP</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l23" href="#l23">23</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#define BOOST_JSON_DETAIL_RYU_DETAIL_D2S_INTRINSICS_HPP</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l24" href="#l24">24</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l25" href="#l25">25</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/json/detail/config.hpp&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l26" href="#l26">26</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l27" href="#l27">27</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// This sets BOOST_JSON_RYU_32_BIT_PLATFORM as a side effect if applicable.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l28" href="#l28">28</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;boost/json/detail/ryu/detail/common.hpp&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l29" href="#l29">29</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l30" href="#l30">30</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#if defined(BOOST_JSON_RYU_HAS_64_BIT_INTRINSICS)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l31" href="#l31">31</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#include</span><span class="w"> </span><span class="cpf">&lt;intrin.h&gt;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l32" href="#l32">32</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#endif</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l33" href="#l33">33</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l34" href="#l34">34</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">namespace</span><span class="w"> </span><span class="nn">boost</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l35" href="#l35">35</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">namespace</span><span class="w"> </span><span class="nn">json</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l36" href="#l36">36</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">namespace</span><span class="w"> </span><span class="nn">detail</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l37" href="#l37">37</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l38" href="#l38">38</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">namespace</span><span class="w"> </span><span class="nn">ryu</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l39" href="#l39">39</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="k">namespace</span><span class="w"> </span><span class="nn">detail</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l40" href="#l40">40</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l41" href="#l41">41</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#if defined(BOOST_JSON_RYU_HAS_64_BIT_INTRINSICS)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l42" href="#l42">42</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l43" href="#l43">43</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">umul128</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">productHi</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l44" href="#l44">44</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">_umul128</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="n">productHi</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l45" href="#l45">45</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l46" href="#l46">46</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l47" href="#l47">47</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">shiftright128</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">lo</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">hi</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dist</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l48" href="#l48">48</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// For the __shiftright128 intrinsic, the shift value is always</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l49" href="#l49">49</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// modulo 64.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l50" href="#l50">50</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// In the current implementation of the double-precision version</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l51" href="#l51">51</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// of Ryu, the shift value is always &lt; 64. (In the case</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l52" href="#l52">52</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// RYU_OPTIMIZE_SIZE == 0, the shift value is in the range [49, 58].</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l53" href="#l53">53</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// Otherwise in the range [2, 59].)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l54" href="#l54">54</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// Check this here in case a future change requires larger shift</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l55" href="#l55">55</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// values. In this case this function needs to be adjusted.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l56" href="#l56">56</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="n">BOOST_ASSERT</span><span class="p">(</span><span class="n">dist</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">64</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l57" href="#l57">57</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">__shiftright128</span><span class="p">(</span><span class="n">lo</span><span class="p">,</span><span class="w"> </span><span class="n">hi</span><span class="p">,</span><span class="w"> </span><span class="p">(</span><span class="kt">unsigned</span><span class="w"> </span><span class="kt">char</span><span class="p">)</span><span class="w"> </span><span class="n">dist</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l58" href="#l58">58</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l59" href="#l59">59</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l60" href="#l60">60</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#else </span><span class="c1">// defined(HAS_64_BIT_INTRINSICS)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l61" href="#l61">61</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l62" href="#l62">62</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">umul128</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="kt">uint64_t</span><span class="o">*</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="n">productHi</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l63" href="#l63">63</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// The casts here help MSVC to avoid calls to the __allmul library function.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l64" href="#l64">64</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">aLo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">a</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l65" href="#l65">65</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">aHi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">a</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l66" href="#l66">66</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">bLo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">b</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l67" href="#l67">67</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">bHi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">b</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l68" href="#l68">68</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l69" href="#l69">69</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">b00</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">aLo</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bLo</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l70" href="#l70">70</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">b01</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">aLo</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bHi</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l71" href="#l71">71</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">b10</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">aHi</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bLo</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l72" href="#l72">72</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">b11</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">aHi</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">bHi</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l73" href="#l73">73</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l74" href="#l74">74</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">b00Lo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">b00</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l75" href="#l75">75</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">b00Hi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">b00</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l76" href="#l76">76</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l77" href="#l77">77</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">mid1</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b10</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">b00Hi</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l78" href="#l78">78</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mid1Lo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">mid1</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l79" href="#l79">79</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mid1Hi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">mid1</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l80" href="#l80">80</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l81" href="#l81">81</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">mid2</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b01</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mid1Lo</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l82" href="#l82">82</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mid2Lo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">mid2</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l83" href="#l83">83</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">mid2Hi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">mid2</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l84" href="#l84">84</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l85" href="#l85">85</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">pHi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">b11</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mid1Hi</span><span class="w"> </span><span class="o">+</span><span class="w"> </span><span class="n">mid2Hi</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l86" href="#l86">86</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">pLo</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">mid2Lo</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="n">b00Lo</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l87" href="#l87">87</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l88" href="#l88">88</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="o">*</span><span class="n">productHi</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">pHi</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l89" href="#l89">89</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">pLo</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l90" href="#l90">90</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l91" href="#l91">91</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l92" href="#l92">92</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">shiftright128</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">lo</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">hi</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">dist</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l93" href="#l93">93</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// We don&#39;t need to handle the case dist &gt;= 64 here (see above).</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l94" href="#l94">94</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="n">BOOST_ASSERT</span><span class="p">(</span><span class="n">dist</span><span class="w"> </span><span class="o">&lt;</span><span class="w"> </span><span class="mi">64</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l95" href="#l95">95</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#if defined(RYU_OPTIMIZE_SIZE) || !defined(RYU_32_BIT_PLATFORM)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l96" href="#l96">96</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="n">BOOST_ASSERT</span><span class="p">(</span><span class="n">dist</span><span class="w"> </span><span class="o">&gt;</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l97" href="#l97">97</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">hi</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dist</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">(</span><span class="n">lo</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="n">dist</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l98" href="#l98">98</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#else</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l99" href="#l99">99</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// Avoid a 64-bit shift by taking advantage of the range of shift values.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l100" href="#l100">100</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="n">BOOST_ASSERT</span><span class="p">(</span><span class="n">dist</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="mi">32</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l101" href="#l101">101</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">hi</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="p">(</span><span class="mi">64</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="n">dist</span><span class="p">))</span><span class="w"> </span><span class="o">|</span><span class="w"> </span><span class="p">((</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">lo</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">32</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="p">(</span><span class="n">dist</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">32</span><span class="p">));</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l102" href="#l102">102</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#endif</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l103" href="#l103">103</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l104" href="#l104">104</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l105" href="#l105">105</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#endif </span><span class="c1">// defined(HAS_64_BIT_INTRINSICS)</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l106" href="#l106">106</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l107" href="#l107">107</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#ifdef RYU_32_BIT_PLATFORM</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l108" href="#l108">108</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l109" href="#l109">109</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Returns the high 64 bits of the 128-bit product of a and b.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l110" href="#l110">110</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">umulh</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">b</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l111" href="#l111">111</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// Reuse the umul128 implementation.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l112" href="#l112">112</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// Optimizers will likely eliminate the instructions used to compute the</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l113" href="#l113">113</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// low part of the product.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l114" href="#l114">114</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">hi</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l115" href="#l115">115</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="n">umul128</span><span class="p">(</span><span class="n">a</span><span class="p">,</span><span class="w"> </span><span class="n">b</span><span class="p">,</span><span class="w"> </span><span class="o">&amp;</span><span class="n">hi</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l116" href="#l116">116</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">hi</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l117" href="#l117">117</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l118" href="#l118">118</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l119" href="#l119">119</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// On 32-bit platforms, compilers typically generate calls to library</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l120" href="#l120">120</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// functions for 64-bit divisions, even if the divisor is a constant.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l121" href="#l121">121</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l122" href="#l122">122</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// E.g.:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l123" href="#l123">123</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// https://bugs.llvm.org/show_bug.cgi?id=37932</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l124" href="#l124">124</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=17958</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l125" href="#l125">125</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// https://gcc.gnu.org/bugzilla/show_bug.cgi?id=37443</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l126" href="#l126">126</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l127" href="#l127">127</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// The functions here perform division-by-constant using multiplications</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l128" href="#l128">128</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// in the same way as 64-bit compilers would do.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l129" href="#l129">129</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">//</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l130" href="#l130">130</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// NB:</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l131" href="#l131">131</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// The multipliers and shift values are the ones generated by clang x64</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l132" href="#l132">132</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// for expressions like x/5, x/10, etc.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l133" href="#l133">133</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l134" href="#l134">134</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div5</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l135" href="#l135">135</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">umulh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mh">0xCCCCCCCCCCCCCCCDu</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l136" href="#l136">136</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l137" href="#l137">137</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l138" href="#l138">138</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div10</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l139" href="#l139">139</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">umulh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mh">0xCCCCCCCCCCCCCCCDu</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">3</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l140" href="#l140">140</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l141" href="#l141">141</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l142" href="#l142">142</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div100</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l143" href="#l143">143</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">umulh</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">,</span><span class="w"> </span><span class="mh">0x28F5C28F5C28F5C3u</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">2</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l144" href="#l144">144</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l145" href="#l145">145</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l146" href="#l146">146</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div1e8</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l147" href="#l147">147</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">umulh</span><span class="p">(</span><span class="n">x</span><span class="p">,</span><span class="w"> </span><span class="mh">0xABCC77118461CEFDu</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">26</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l148" href="#l148">148</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l149" href="#l149">149</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l150" href="#l150">150</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div1e9</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l151" href="#l151">151</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">umulh</span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">9</span><span class="p">,</span><span class="w"> </span><span class="mh">0x44B82FA09B5A53u</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;&gt;</span><span class="w"> </span><span class="mi">11</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l152" href="#l152">152</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l153" href="#l153">153</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l154" href="#l154">154</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">mod1e9</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l155" href="#l155">155</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// Avoid 64-bit math as much as possible.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l156" href="#l156">156</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// Returning (uint32_t) (x - 1000000000 * div1e9(x)) would</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l157" href="#l157">157</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// perform 32x64-bit multiplication and 64-bit subtraction.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l158" href="#l158">158</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// x and 1000000000 * div1e9(x) are guaranteed to differ by</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l159" href="#l159">159</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// less than 10^9, so their highest 32 bits must be identical,</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l160" href="#l160">160</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// so we can truncate both sides to uint32_t before subtracting.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l161" href="#l161">161</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// We can also simplify (uint32_t) (1000000000 * div1e9(x)).</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l162" href="#l162">162</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// We can truncate before multiplying instead of after, as multiplying</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l163" href="#l163">163</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// the highest 32 bits of div1e9(x) can&#39;t affect the lowest 32 bits.</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l164" href="#l164">164</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1000000000</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="w"> </span><span class="n">div1e9</span><span class="p">(</span><span class="n">x</span><span class="p">));</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l165" href="#l165">165</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l166" href="#l166">166</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l167" href="#l167">167</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#else </span><span class="c1">// RYU_32_BIT_PLATFORM</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l168" href="#l168">168</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l169" href="#l169">169</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+1974          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div5</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l170" href="#l170">170</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+1974          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">5</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l171" href="#l171">171</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l172" href="#l172">172</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l173" href="#l173">173</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+12198          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div10</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l174" href="#l174">174</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+12198          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">10</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l175" href="#l175">175</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l176" href="#l176">176</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l177" href="#l177">177</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+497          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div100</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l178" href="#l178">178</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+497          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l179" href="#l179">179</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l180" href="#l180">180</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l181" href="#l181">181</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+59          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div1e8</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l182" href="#l182">182</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+59          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">100000000</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l183" href="#l183">183</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l184" href="#l184">184</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l185" href="#l185">185</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+17          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="nf">div1e9</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l186" href="#l186">186</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+17          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">x</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="mi">1000000000</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l187" href="#l187">187</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l188" href="#l188">188</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l189" href="#l189">189</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+17          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">mod1e9</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">x</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l190" href="#l190">190</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+17          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="w"> </span><span class="p">(</span><span class="n">x</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1000000000</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">div1e9</span><span class="p">(</span><span class="n">x</span><span class="p">));</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l191" href="#l191">191</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l192" href="#l192">192</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l193" href="#l193">193</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#endif </span><span class="c1">// RYU_32_BIT_PLATFORM</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l194" href="#l194">194</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l195" href="#l195">195</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+114          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="nf">pow5Factor</span><span class="p">(</span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l196" href="#l196">196</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+114          </td>
+          <td class="col-source"><span class="w">  </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">count</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l197" href="#l197">197</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">for</span><span class="w"> </span><span class="p">(;;)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line partialCoveredLine show_partialCoveredLine">
+          <td class="col-lineno">
+            <a id="l198" href="#l198">198</a>
+          </td>
+          <td class="col-branch">
+            <details class="branch-details">
+              <summary class="branch-summary">1/2</summary>
+              <div class="branch-popup">
+                <div class="branch-not-taken">&cross; Branch 0 not taken.</div>
+                <div class="branch-taken">&check; Branch 1 taken 1860 times.</div>
+              </div>
+            </details>
+          </td>
+          <td class="col-count partialCoveredLine">
+1860          </td>
+          <td class="col-source"><span class="w">    </span><span class="n">BOOST_ASSERT</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l199" href="#l199">199</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+1860          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">q</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">div5</span><span class="p">(</span><span class="n">value</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l200" href="#l200">200</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+1860          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">r</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="w"> </span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">5</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="p">((</span><span class="kt">uint32_t</span><span class="p">)</span><span class="w"> </span><span class="n">q</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l201" href="#l201">201</a>
+          </td>
+          <td class="col-branch">
+            <details class="branch-details">
+              <summary class="branch-summary">2/2</summary>
+              <div class="branch-popup">
+                <div class="branch-taken">&check; Branch 0 taken 114 times.</div>
+                <div class="branch-taken">&check; Branch 1 taken 1746 times.</div>
+              </div>
+            </details>
+          </td>
+          <td class="col-count coveredLine">
+1860          </td>
+          <td class="col-source"><span class="w">    </span><span class="k">if</span><span class="w"> </span><span class="p">(</span><span class="n">r</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l202" href="#l202">202</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+114          </td>
+          <td class="col-source"><span class="w">      </span><span class="k">break</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l203" href="#l203">203</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">    </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l204" href="#l204">204</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+1746          </td>
+          <td class="col-source"><span class="w">    </span><span class="n">value</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">q</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l205" href="#l205">205</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+1746          </td>
+          <td class="col-source"><span class="w">    </span><span class="o">++</span><span class="n">count</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l206" href="#l206">206</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+1746          </td>
+          <td class="col-source"><span class="w">  </span><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l207" href="#l207">207</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+114          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">count</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l208" href="#l208">208</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l209" href="#l209">209</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l210" href="#l210">210</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Returns true if value is divisible by 5^p.</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l211" href="#l211">211</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+114          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">multipleOfPowerOf5</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l212" href="#l212">212</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// I tried a case distinction on p, but there was no performance difference.</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l213" href="#l213">213</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+114          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="n">pow5Factor</span><span class="p">(</span><span class="n">value</span><span class="p">)</span><span class="w"> </span><span class="o">&gt;=</span><span class="w"> </span><span class="n">p</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l214" href="#l214">214</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l215" href="#l215">215</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l216" href="#l216">216</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="c1">// Returns true if value is divisible by 2^p.</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l217" href="#l217">217</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+96          </td>
+          <td class="col-source"><span class="kr">inline</span><span class="w"> </span><span class="kt">bool</span><span class="w"> </span><span class="nf">multipleOfPowerOf2</span><span class="p">(</span><span class="k">const</span><span class="w"> </span><span class="kt">uint64_t</span><span class="w"> </span><span class="n">value</span><span class="p">,</span><span class="w"> </span><span class="k">const</span><span class="w"> </span><span class="kt">uint32_t</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="p">{</span></td>
+        </tr>
+        <tr class="source-line partialCoveredLine show_partialCoveredLine">
+          <td class="col-lineno">
+            <a id="l218" href="#l218">218</a>
+          </td>
+          <td class="col-branch">
+            <details class="branch-details">
+              <summary class="branch-summary">1/2</summary>
+              <div class="branch-popup">
+                <div class="branch-not-taken">&cross; Branch 0 not taken.</div>
+                <div class="branch-taken">&check; Branch 1 taken 96 times.</div>
+              </div>
+            </details>
+          </td>
+          <td class="col-count partialCoveredLine">
+96          </td>
+          <td class="col-source"><span class="w">  </span><span class="n">BOOST_ASSERT</span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">!=</span><span class="w"> </span><span class="mi">0</span><span class="p">);</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l219" href="#l219">219</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="w">  </span><span class="c1">// return __builtin_ctzll(value) &gt;= p;</span></td>
+        </tr>
+        <tr class="source-line coveredLine show_coveredLine">
+          <td class="col-lineno">
+            <a id="l220" href="#l220">220</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count coveredLine">
+96          </td>
+          <td class="col-source"><span class="w">  </span><span class="k">return</span><span class="w"> </span><span class="p">(</span><span class="n">value</span><span class="w"> </span><span class="o">&amp;</span><span class="w"> </span><span class="p">((</span><span class="mi">1ull</span><span class="w"> </span><span class="o">&lt;&lt;</span><span class="w"> </span><span class="n">p</span><span class="p">)</span><span class="w"> </span><span class="o">-</span><span class="w"> </span><span class="mi">1</span><span class="p">))</span><span class="w"> </span><span class="o">==</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l221" href="#l221">221</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l222" href="#l222">222</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l223" href="#l223">223</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l224" href="#l224">224</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span><span class="w"> </span><span class="c1">// detail</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l225" href="#l225">225</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span><span class="w"> </span><span class="c1">// ryu</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l226" href="#l226">226</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l227" href="#l227">227</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span><span class="w"> </span><span class="c1">// detail</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l228" href="#l228">228</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span><span class="w"> </span><span class="c1">// namespace json</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l229" href="#l229">229</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="p">}</span><span class="w"> </span><span class="c1">// namespace boost</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l230" href="#l230">230</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l231" href="#l231">231</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"><span class="cp">#endif</span></td>
+        </tr>
+        <tr class="source-line">
+          <td class="col-lineno">
+            <a id="l232" href="#l232">232</a>
+          </td>
+          <td class="col-branch">
+          </td>
+          <td class="col-count">
+          </td>
+          <td class="col-source"></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>          </section>
+        </div>
+
+        <footer class="main-footer">
+          Created using <a href="http://gcovr.com/en/8.4">GCOVR (Version 8.4)</a>
+          at 2026-01-31 12:40:02
+        </footer>
+      </main>
+    </div>
+  <script>window.GCOVR_TREE_DATA=[{"name": "detail", "fullPath": "detail", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.detail.cde56e0ee4a52539e8c73bb66723609f.html", "children": [{"name": "charconv", "fullPath": "detail/charconv", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.charconv.0348fe574a965cba25c12a65b5e0fb3b.html", "children": [{"name": "detail", "fullPath": "detail/charconv/detail", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.detail.4f2169b6bf3485451ecccb83f6e516b8.html", "children": [{"name": "fast_float", "fullPath": "detail/charconv/detail/fast_float", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.fast_float.5458159b5ceeffedc0c7775622637afd.html", "children": [{"name": "ascii_number.hpp", "fullPath": "detail/charconv/detail/fast_float/ascii_number.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.ascii_number.hpp.56a8f18f86aae9bbbe6d77b0c6dc5886.html", "children": []}, {"name": "bigint.hpp", "fullPath": "detail/charconv/detail/fast_float/bigint.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.bigint.hpp.2d543877071a451a0d7537f961932092.html", "children": []}, {"name": "decimal_to_binary.hpp", "fullPath": "detail/charconv/detail/fast_float/decimal_to_binary.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.decimal_to_binary.hpp.daae727201b4b0894786c591cbac9197.html", "children": []}, {"name": "digit_comparison.hpp", "fullPath": "detail/charconv/detail/fast_float/digit_comparison.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.digit_comparison.hpp.3ff9429da0828c2fb1614c460272aabe.html", "children": []}, {"name": "float_common.hpp", "fullPath": "detail/charconv/detail/fast_float/float_common.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.float_common.hpp.287c73483fa7128ae021ad6eade0c593.html", "children": []}, {"name": "parse_number.hpp", "fullPath": "detail/charconv/detail/fast_float/parse_number.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.parse_number.hpp.c76e61e60f6c21a75a766db65bc07fa4.html", "children": []}]}, {"name": "compute_float64.hpp", "fullPath": "detail/charconv/detail/compute_float64.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.compute_float64.hpp.5b7fc7d6b190684609f43d37b8e554c1.html", "children": []}, {"name": "emulated128.hpp", "fullPath": "detail/charconv/detail/emulated128.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.emulated128.hpp.d23abe86143f8490971c63f9a2b9ff46.html", "children": []}, {"name": "from_chars_float_impl.hpp", "fullPath": "detail/charconv/detail/from_chars_float_impl.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.from_chars_float_impl.hpp.f0a018ed8afbbc0cac0937c68535fe44.html", "children": []}, {"name": "from_chars_integer_impl.hpp", "fullPath": "detail/charconv/detail/from_chars_integer_impl.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.from_chars_integer_impl.hpp.51198137cb381ae457edcc0ca5b0afdc.html", "children": []}, {"name": "integer_search_trees.hpp", "fullPath": "detail/charconv/detail/integer_search_trees.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.integer_search_trees.hpp.f1ed2fbd62a768e42ce3dccd552fc724.html", "children": []}, {"name": "parser.hpp", "fullPath": "detail/charconv/detail/parser.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.parser.hpp.fdf50af0c9ed36f03a6faa38dde29a68.html", "children": []}]}, {"name": "impl", "fullPath": "impl", "coverage": "-", "coverageClass": "coverage-unknown", "isDirectory": true, "link": null, "children": [{"name": "from_chars.ipp", "fullPath": "detail/charconv/impl/from_chars.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.from_chars.ipp.593866720f662663eb74fb3c7425699b.html", "children": []}]}]}, {"name": "impl", "fullPath": "detail/impl", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.impl.fba5280e1454b100db3531b44a4ef615.html", "children": [{"name": "array.hpp", "fullPath": "detail/impl/array.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.array.hpp.376d67c96aa6d26d32532eefed37047b.html", "children": []}, {"name": "default_resource.ipp", "fullPath": "detail/impl/default_resource.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.default_resource.ipp.925bba72accee1d6a282294edd7c5158.html", "children": []}, {"name": "except.ipp", "fullPath": "detail/impl/except.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.except.ipp.2a24b1dad009ead29e531d8de1e7e12c.html", "children": []}, {"name": "format.ipp", "fullPath": "detail/impl/format.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.format.ipp.36cbc7712b6bd51385ed7da1ac4bd9e2.html", "children": []}, {"name": "handler.ipp", "fullPath": "detail/impl/handler.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.handler.ipp.aa712bd6d54b507e8919a664c0c93a7a.html", "children": []}, {"name": "shared_resource.ipp", "fullPath": "detail/impl/shared_resource.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.shared_resource.ipp.233960149279b02805dd43ad05bc6d36.html", "children": []}, {"name": "stack.ipp", "fullPath": "detail/impl/stack.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.stack.ipp.303b6c707d3e2cc7e5b0dbb778e20c00.html", "children": []}, {"name": "string_impl.ipp", "fullPath": "detail/impl/string_impl.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.string_impl.ipp.f4bb060eb0036230005a971abfe36cfe.html", "children": []}]}, {"name": "ryu", "fullPath": "detail/ryu", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.ryu.618d238aa7f6c90f17bf99173dbc1005.html", "children": [{"name": "detail", "fullPath": "detail/ryu/detail", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.detail.a57772cc1e0afd13280c8f02257a34d1.html", "children": [{"name": "common.hpp", "fullPath": "detail/ryu/detail/common.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.common.hpp.5fc66723b7f96ae7415b1b0999ce2fb8.html", "children": []}, {"name": "d2s.hpp", "fullPath": "detail/ryu/detail/d2s.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.d2s.hpp.f58f513dc64091348fcd6b09deb11a33.html", "children": []}, {"name": "d2s_full_table.hpp", "fullPath": "detail/ryu/detail/d2s_full_table.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.d2s_full_table.hpp.441b505f2b66cb0a03c2fee7e9e86f2a.html", "children": []}, {"name": "d2s_intrinsics.hpp", "fullPath": "detail/ryu/detail/d2s_intrinsics.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.d2s_intrinsics.hpp.27003cc4e0304176acfd826de2ed1477.html", "children": []}, {"name": "digit_table.hpp", "fullPath": "detail/ryu/detail/digit_table.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.digit_table.hpp.ad2365d5df3b51ba3944e2adb0757b6b.html", "children": []}]}, {"name": "impl", "fullPath": "impl", "coverage": "-", "coverageClass": "coverage-unknown", "isDirectory": true, "link": null, "children": [{"name": "d2s.ipp", "fullPath": "detail/ryu/impl/d2s.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.d2s.ipp.269713da674054563d0013212aec3422.html", "children": []}]}]}, {"name": "array.hpp", "fullPath": "detail/array.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.array.hpp.56086e6d25213b4dd5fbe0a86d833ca3.html", "children": []}, {"name": "buffer.hpp", "fullPath": "detail/buffer.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.buffer.hpp.9ef8c93fe7c75ba09d5cb948a222f6aa.html", "children": []}, {"name": "config.hpp", "fullPath": "detail/config.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.config.hpp.1f2636bd58e7d14df74e963b22936fe0.html", "children": []}, {"name": "default_resource.hpp", "fullPath": "detail/default_resource.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.default_resource.hpp.4bb32c4ab49a5ae2b4e73a0e252e65bf.html", "children": []}, {"name": "digest.hpp", "fullPath": "detail/digest.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.digest.hpp.c33275f1b085ccd4346fda343f41baae.html", "children": []}, {"name": "literals.hpp", "fullPath": "detail/literals.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.literals.hpp.cd66a8f42c9eceb4b0ac5ac392f7c819.html", "children": []}, {"name": "object.hpp", "fullPath": "detail/object.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.object.hpp.3227439f41cd956df63be93a2ff74a1f.html", "children": []}, {"name": "sbo_buffer.hpp", "fullPath": "detail/sbo_buffer.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.sbo_buffer.hpp.c9aac8094f12f7fe967cd3b35c35e63d.html", "children": []}, {"name": "shared_resource.hpp", "fullPath": "detail/shared_resource.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.shared_resource.hpp.0bba32be968e13f7751291ae8b7e20ac.html", "children": []}, {"name": "sse2.hpp", "fullPath": "detail/sse2.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.sse2.hpp.dced17a8c9ac68a16399a769344b1697.html", "children": []}, {"name": "stack.hpp", "fullPath": "detail/stack.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.stack.hpp.6cdbe04b0c224557e90158139091121f.html", "children": []}, {"name": "stream.hpp", "fullPath": "detail/stream.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.stream.hpp.f8aa341dc00b550b7502f59dd55c00d0.html", "children": []}, {"name": "string_impl.hpp", "fullPath": "detail/string_impl.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.string_impl.hpp.26b9c33a9f3deaf93d977c7d7a1875d0.html", "children": []}, {"name": "utf8.hpp", "fullPath": "detail/utf8.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.utf8.hpp.fd6a91246f62b1bc774a7184a87c9bb8.html", "children": []}, {"name": "value.hpp", "fullPath": "detail/value.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.value.hpp.d030e52778c938d0205d7a2834c5958f.html", "children": []}]}, {"name": "impl", "fullPath": "impl", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": true, "link": "index.impl.47cffbe127c3a00f4592e53cd18f4433.html", "children": [{"name": "array.hpp", "fullPath": "impl/array.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.array.hpp.9daf802191779884845dd1eb532d6a80.html", "children": []}, {"name": "array.ipp", "fullPath": "impl/array.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.array.ipp.35b473eab50296c2ea902fd0c19d11c5.html", "children": []}, {"name": "conversion.hpp", "fullPath": "impl/conversion.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.conversion.hpp.b94ce8a01b965f95848a56e9dad65a91.html", "children": []}, {"name": "error.hpp", "fullPath": "impl/error.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.error.hpp.4e5474a8b47645ff07d6fdb24d505d86.html", "children": []}, {"name": "error.ipp", "fullPath": "impl/error.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.error.ipp.214c7ff712768de78b7d5147bb75f502.html", "children": []}, {"name": "kind.ipp", "fullPath": "impl/kind.ipp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.kind.ipp.46c0f96748441614bc733a99eb57e5ea.html", "children": []}]}, {"name": "array.hpp", "fullPath": "array.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.array.hpp.1808ab0636b6e387c1685d76232e4cf0.html", "children": []}, {"name": "basic_parser.hpp", "fullPath": "basic_parser.hpp", "coverage": "", "coverageClass": "coverage-unknown", "isDirectory": false, "link": "index.basic_parser.hpp.ec40e8306dc0f7a646c1b78c95707f48.html", "children": []}];</script>
+</body>
+
+</html>

@@ -1,7 +1,19 @@
-# Generated coverage reports
-# json/gcovr/
-# json/gcovr-lcov/
-# json/gcovr-output/
+# Generated coverage data
+*.info
+coverage.json
+
+# Note: coverage_sample.json and gcovr-output/ are checked in as samples
+
+# Boost source (clone via scripts, don't check in)
+boost-root/
+json/
+
+# Python cache and venv
+__pycache__/
+.venv/
+
+# Docker output
+output/
 
 # Claude Code
 .claude/
