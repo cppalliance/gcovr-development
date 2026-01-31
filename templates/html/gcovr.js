@@ -455,17 +455,16 @@
     const simpleToggles = document.querySelectorAll('.btn-toggle');
     simpleToggles.forEach(function(button) {
       button.addEventListener('click', function() {
-        const classes = Array.from(this.classList);
-        const showClass = classes.find(function(c) { return c.startsWith('show_'); });
+        // Use data attribute to get line class (persists after toggle)
+        const lineClass = this.dataset.lineClass;
+        if (!lineClass) return;
 
-        if (showClass) {
-          this.classList.toggle(showClass);
-          const lineClass = showClass.replace('show_', '');
-          const lines = document.querySelectorAll('.' + lineClass);
-          lines.forEach(function(line) {
-            line.classList.toggle(showClass);
-          });
-        }
+        const showClass = 'show_' + lineClass;
+        this.classList.toggle(showClass);
+        const lines = document.querySelectorAll('.' + lineClass);
+        lines.forEach(function(line) {
+          line.classList.toggle(showClass);
+        });
       });
     });
   }
