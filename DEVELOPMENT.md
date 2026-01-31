@@ -51,8 +51,9 @@ cp output/coverage.json json/
 ## Workflow
 
 1. **Edit templates** in `templates/html/`
-2. **Run `./build.sh`** to regenerate the HTML report
+2. **Run `./build.sh --quick`** to regenerate with sample data (faster)
 3. **View results** in `json/gcovr/index.html`
+4. **Run `./build.sh`** for a full build when ready
 
 ## Files
 
@@ -60,7 +61,7 @@ cp output/coverage.json json/
 |------|---------|
 | `setup-local-venv.sh` | Creates Python venv with gcovr |
 | `docker-build.sh` | Builds coverage data via Docker |
-| `build.sh` | Generates HTML report from coverage data |
+| `build.sh` | Generates HTML report (`--quick` for faster sample builds) |
 | `templates/html/` | Custom gcovr HTML templates |
 | `scripts/gcovr_wrapper.py` | Wrapper to register `.ipp` as C++ |
 

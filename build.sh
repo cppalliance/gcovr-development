@@ -45,16 +45,12 @@ import json
 with open('$COVERAGE_FILE') as f:
     data = json.load(f)
 files = data.get('files', [])
-# Sort by line count and pick a mix: 20 small, 15 medium, 5 larger
-by_size = sorted(files, key=lambda f: len(f.get('lines', [])))
-small = [f for f in by_size if len(f.get('lines', [])) < 500][:20]
-medium = [f for f in by_size if 500 <= len(f.get('lines', [])) < 2000][:15]
-larger = [f for f in by_size if len(f.get('lines', [])) >= 2000][:5]
-sample = small + medium + larger
-data['files'] = sample
+# Pick 50 small files (<500 lines) for fast template iteration
+small = [f for f in files if len(f.get('lines', [])) < 500][:50]
+data['files'] = small
 with open('$SAMPLE_FILE', 'w') as f:
     json.dump(data, f)
-print(f'Created sample with {len(sample)} files ({len(small)} small, {len(medium)} medium, {len(larger)} larger)')
+print(f'Created sample with {len(small)} small files')
 "
     fi
 
