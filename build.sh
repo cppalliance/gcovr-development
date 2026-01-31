@@ -1,10 +1,20 @@
 #!/bin/bash
 
 # This script will "rebuild" html files based on the templates.
+#
+# Usage:
+#   ./build.sh          # Full build (slow)
+#   ./build.sh --quick  # Quick build with sample data for template testing
 
 set -xe
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
+# Parse arguments
+USE_QUICK=false
+if [[ "${1:-}" == "--quick" || "${1:-}" == "-q" ]]; then
+    USE_QUICK=true
+fi
 
 # Auto-activate venv if it exists
 if [[ -f "$SCRIPT_DIR/.venv/bin/activate" ]]; then
@@ -22,13 +32,47 @@ outputlocation="$BOOST_CI_SRC_FOLDER/gcovr"
 rm -rf $outputlocation || true
 mkdir -p $outputlocation
 
-if [[ -f "$BOOST_CI_SRC_FOLDER/coverage.json" ]]; then
+# Determine which coverage file to use
+COVERAGE_FILE="$BOOST_CI_SRC_FOLDER/coverage.json"
+if [[ "$USE_QUICK" == true ]]; then
+    SAMPLE_FILE="$BOOST_CI_SRC_FOLDER/coverage_sample.json"
+
+    # Create sample file if it doesn't exist
+    if [[ ! -f "$SAMPLE_FILE" && -f "$COVERAGE_FILE" ]]; then
+        echo "Creating sample coverage file for template testing..."
+        python3 -c "
+import json
+with open('$COVERAGE_FILE') as f:
+    data = json.load(f)
+files = data.get('files', [])
+# Sort by line count and pick a mix: 20 small, 15 medium, 5 larger
+by_size = sorted(files, key=lambda f: len(f.get('lines', [])))
+small = [f for f in by_size if len(f.get('lines', [])) < 500][:20]
+medium = [f for f in by_size if 500 <= len(f.get('lines', [])) < 2000][:15]
+larger = [f for f in by_size if len(f.get('lines', [])) >= 2000][:5]
+sample = small + medium + larger
+data['files'] = sample
+with open('$SAMPLE_FILE', 'w') as f:
+    json.dump(data, f)
+print(f'Created sample with {len(sample)} files ({len(small)} small, {len(medium)} medium, {len(larger)} larger)')
+"
+    fi
+
+    if [[ -f "$SAMPLE_FILE" ]]; then
+        COVERAGE_FILE="$SAMPLE_FILE"
+        echo "Using sample coverage file for quick build"
+    else
+        echo "WARNING: Sample file not found, using full coverage"
+    fi
+fi
+
+if [[ -f "$COVERAGE_FILE" ]]; then
     # Local/macOS: Use gcovr JSON tracefile (preserves function/branch data)
     # The JSON uses relative paths from the boost-root directory,
     # so we set --root to point to boost-root.
 
     "$SCRIPT_DIR/scripts/gcovr_wrapper.py" \
-        --json-add-tracefile "$BOOST_CI_SRC_FOLDER/coverage.json" \
+        --json-add-tracefile "$COVERAGE_FILE" \
         --root "$SCRIPT_DIR/boost-root" \
         --merge-lines \
         --html-nested \

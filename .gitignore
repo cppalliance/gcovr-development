@@ -4,6 +4,7 @@ json/gcovr-lcov/
 json/gcovr-output/
 json/*.info
 json/coverage.json
+json/coverage_sample.json
 
 # Build/test artifacts (from b2/Docker)
 boost-root/bin.v2/
