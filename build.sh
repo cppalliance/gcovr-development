@@ -30,32 +30,63 @@ if [[ -f "$BOOST_CI_SRC_FOLDER/coverage_filtered.info" ]]; then
     lcov_cobertura "$TEMP_COVERAGE" -o "$TEMP_XML"
     sed -i.bak "s|filename=\"\.\./boost-root/|filename=\"$SCRIPT_DIR/boost-root/|g" "$TEMP_XML"
 
+    # Pass 1: Collect raw coverage as JSON
     "$SCRIPT_DIR/scripts/gcovr_wrapper.py" \
         --cobertura-add-tracefile "$TEMP_XML" \
         --root "$SCRIPT_DIR" \
         --merge-lines \
+        --json "$outputlocation/coverage-raw.json"
+
+    # Fix paths in JSON
+    python3 "$SCRIPT_DIR/scripts/fix_paths.py" \
+        "$outputlocation/coverage-raw.json" \
+        "$outputlocation/coverage-fixed.json" \
+        --repo "$REPONAME"
+
+    # Pass 2: Generate HTML from fixed JSON
+    "$SCRIPT_DIR/scripts/gcovr_wrapper.py" \
+        -a "$outputlocation/coverage-fixed.json" \
         --html-nested \
         --html-template-dir "$SCRIPT_DIR/templates/html" \
         --html-title "$REPONAME" \
-        --output "$outputlocation/index.html"
+        --output "$outputlocation/index.html" \
+        --json-summary-pretty \
+        --json-summary "$outputlocation/summary.json"
 
     # Generate tree.json for sidebar navigation
     python3 "$SCRIPT_DIR/scripts/build_tree.py" "$outputlocation"
 
     # Generate coverage badges
-    python3 "$SCRIPT_DIR/scripts/generate_badges.py" "$outputlocation"
+    python3 "$SCRIPT_DIR/scripts/generate_badges.py" "$outputlocation" --json "$outputlocation/summary.json"
 else
     # CI/Linux: gcovr reads coverage data directly
     cd ../boost-root
+
+    # Pass 1: Collect raw coverage as JSON
     gcovr --merge-mode-functions separate -p \
         --merge-lines \
-        --html-nested \
-        --html-template-dir=../templates/html \
         --exclude-unreachable-branches \
         --exclude-throw-branches \
         --exclude '.*/test/.*' \
         --exclude '.*/extra/.*' \
         --filter "$GCOVRFILTER" \
+        --json "$outputlocation/coverage-raw.json"
+
+    # Fix paths in JSON
+    python3 "../scripts/fix_paths.py" \
+        "$outputlocation/coverage-raw.json" \
+        "$outputlocation/coverage-fixed.json" \
+        --repo "$REPONAME"
+
+    # Create symlinks so gcovr can find source files at repo-relative paths
+    ln -sfn "$BOOST_CI_SRC_FOLDER/include" "$(pwd)/include" 2>/dev/null || true
+    ln -sfn "$BOOST_CI_SRC_FOLDER/src" "$(pwd)/src" 2>/dev/null || true
+
+    # Pass 2: Generate HTML from fixed JSON
+    gcovr -a "$outputlocation/coverage-fixed.json" \
+        --html-nested \
+        --html-template-dir=../templates/html \
+        --html-title "$REPONAME" \
         --html \
         --output "$outputlocation/index.html" \
         --json-summary-pretty \
