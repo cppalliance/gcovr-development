@@ -1866,7 +1866,7 @@ body.sidebar-resizing .main-content {
    =========================================== */
 
 ::-webkit-scrollbar {
-  width: 8px;
+  width: 12px;
   height: 8px;
 }
 
