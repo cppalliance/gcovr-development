@@ -16,6 +16,8 @@
     initToggleButtons();
     initTreeControls();
     initViewToggle();
+    initTlaNavigation();
+    initPopupResize();
 
     // Re-enable transitions after all init (including search restore)
     // has completed so the first paint is the final state
@@ -1258,6 +1260,121 @@
       setTimeout(function() {
         switchToFlat();
       }, 0);
+    }
+  }
+
+  // ===========================================
+  // Popup Resize (only when overflowing)
+  // ===========================================
+
+  function initPopupResize() {
+    var details = document.querySelectorAll('.branch-details, .condition-details, .decision-details, .call-details');
+    if (details.length === 0) return;
+
+    details.forEach(function(det) {
+      det.addEventListener('toggle', function() {
+        if (!det.open) return;
+        var popup = det.querySelector('.branch-popup, .condition-popup, .decision-popup, .call-popup');
+        if (!popup) return;
+        // Check after render if content overflows
+        requestAnimationFrame(function() {
+          if (popup.scrollHeight > popup.clientHeight) {
+            popup.classList.add('is-overflowing');
+          } else {
+            popup.classList.remove('is-overflowing');
+          }
+        });
+      });
+    });
+  }
+
+  // ===========================================
+  // TLA Navigation (HIT/MIS/PAR links)
+  // ===========================================
+
+  function initTlaNavigation() {
+    var rows = document.querySelectorAll('.source-line');
+    if (rows.length === 0) return;
+
+    // Classify each row by coverage type
+    var COV_CLASSES = ['coveredLine', 'uncoveredLine', 'partialCoveredLine'];
+    var LABELS = { coveredLine: 'HIT', uncoveredLine: 'MIS', partialCoveredLine: 'PAR' };
+    var CSS_CLASSES = { coveredLine: 'tla-hit', uncoveredLine: 'tla-mis', partialCoveredLine: 'tla-par' };
+
+    // Build list of groups: contiguous runs of the same coverage class
+    var groups = []; // { type, firstRow }
+    var prevType = null;
+
+    for (var i = 0; i < rows.length; i++) {
+      var row = rows[i];
+      var type = null;
+      for (var j = 0; j < COV_CLASSES.length; j++) {
+        if (row.classList.contains(COV_CLASSES[j])) {
+          type = COV_CLASSES[j];
+          break;
+        }
+      }
+      if (type === null) {
+        prevType = null;
+        continue;
+      }
+      if (type !== prevType) {
+        groups.push({ type: type, firstRow: row });
+        prevType = type;
+      }
+    }
+
+    if (groups.length === 0) return;
+
+    // Determine the anchor prefix used in this page
+    var sampleAnchor = rows[0].querySelector('.col-lineno a');
+    var anchorPrefix = '';
+    if (sampleAnchor) {
+      var id = sampleAnchor.id;
+      var idx = id.indexOf('l');
+      if (idx > 0) {
+        anchorPrefix = id.substring(0, idx);
+      }
+    }
+
+    // For each group, find the line number from its first row
+    function getLineNo(row) {
+      var a = row.querySelector('.col-lineno a');
+      return a ? a.textContent.trim() : '';
+    }
+
+    // Build per-type lists for wrap-around linking
+    var byType = {};
+    for (var i = 0; i < groups.length; i++) {
+      var g = groups[i];
+      if (!byType[g.type]) byType[g.type] = [];
+      byType[g.type].push(i);
+    }
+
+    // For each group, compute next group index of same type
+    var nextGroupIdx = new Array(groups.length);
+    for (var type in byType) {
+      var indices = byType[type];
+      for (var k = 0; k < indices.length; k++) {
+        var nextK = (k + 1) % indices.length;
+        nextGroupIdx[indices[k]] = indices[nextK];
+      }
+    }
+
+    // Inject TLA links
+    for (var i = 0; i < groups.length; i++) {
+      var g = groups[i];
+      var cell = g.firstRow.querySelector('.col-tla');
+      if (!cell) continue;
+
+      var targetGroup = groups[nextGroupIdx[i]];
+      var targetLineNo = getLineNo(targetGroup.firstRow);
+
+      var a = document.createElement('a');
+      a.className = 'tla-link ' + CSS_CLASSES[g.type];
+      a.textContent = LABELS[g.type];
+      a.href = '#' + anchorPrefix + 'l' + targetLineNo;
+      cell.appendChild(a);
     }
   }
 
