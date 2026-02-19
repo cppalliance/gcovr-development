@@ -19,13 +19,11 @@
     initTlaNavigation();
     initPopupResize();
 
-    // Re-enable transitions after all init (including search restore)
-    // has completed so the first paint is the final state
-    requestAnimationFrame(function() {
-      requestAnimationFrame(function() {
-        document.documentElement.classList.remove('no-transitions');
-      });
-    });
+    // Reveal page now that all init is done
+    document.documentElement.classList.remove('no-transitions');
+
+    // Prefetch linked pages on hover for instant navigation
+    initPrefetch();
   });
 
   // ===========================================
@@ -1370,12 +1368,50 @@
       var targetGroup = groups[nextGroupIdx[i]];
       var targetLineNo = getLineNo(targetGroup.firstRow);
 
+      var targetId = anchorPrefix + 'l' + targetLineNo;
+
       var a = document.createElement('a');
       a.className = 'tla-link ' + CSS_CLASSES[g.type];
       a.textContent = LABELS[g.type];
-      a.href = '#' + anchorPrefix + 'l' + targetLineNo;
+      a.href = '#' + targetId;
+      a.addEventListener('click', function(e) {
+        var target = document.getElementById(this.getAttribute('href').substring(1));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          // Update URL hash without triggering a jump
+          history.replaceState(null, '', this.getAttribute('href'));
+        }
+      });
       cell.appendChild(a);
     }
+  }
+
+  // ===========================================
+  // Prefetch pages on hover for instant nav
+  // ===========================================
+
+  function initPrefetch() {
+    // Skip for file:// protocol (fetch won't work)
+    if (location.protocol === 'file:') return;
+
+    var prefetched = {};
+
+    document.addEventListener('mouseover', function(e) {
+      var link = e.target.closest('a[href]');
+      if (!link) return;
+
+      var href = link.getAttribute('href');
+      // Only prefetch local HTML pages
+      if (!href || href.charAt(0) === '#' || href.indexOf('://') !== -1) return;
+      if (prefetched[href]) return;
+
+      prefetched[href] = true;
+      var prefetchLink = document.createElement('link');
+      prefetchLink.rel = 'prefetch';
+      prefetchLink.href = href;
+      document.head.appendChild(prefetchLink);
+    });
   }
 
 })();

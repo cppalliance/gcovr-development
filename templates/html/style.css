@@ -162,12 +162,16 @@
   --code-string: #0550ae;
 }
 
-/* Suppress transitions on initial load to prevent flash */
+/* Suppress transitions and hide content on initial load to prevent flash */
 html.no-transitions,
 html.no-transitions *,
 html.no-transitions *::before,
 html.no-transitions *::after {
   transition: none !important;
+}
+
+html.no-transitions body {
+  opacity: 0;
 }
 
 /* Smooth theme transitions */
@@ -199,6 +203,7 @@ body {
   color: var(--text-primary);
   background: var(--bg-primary);
   overflow-x: hidden;
+  opacity: 1;
 }
 
 a {
