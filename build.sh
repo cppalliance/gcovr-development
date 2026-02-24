@@ -47,11 +47,15 @@ if [[ -f "$BOOST_CI_SRC_FOLDER/coverage_filtered.info" ]]; then
     "$SCRIPT_DIR/scripts/gcovr_wrapper.py" \
         -a "$outputlocation/coverage-fixed.json" \
         --html-nested \
+        --no-html-self-contained \
         --html-template-dir "$SCRIPT_DIR/templates/html" \
         --html-title "$REPONAME" \
         --output "$outputlocation/index.html" \
         --json-summary-pretty \
         --json-summary "$outputlocation/summary.json"
+
+    # Copy font files to output directory
+    cp "$SCRIPT_DIR/templates/html/"*.woff2 "$outputlocation/"
 
     # Generate tree.json for sidebar navigation
     python3 "$SCRIPT_DIR/scripts/build_tree.py" "$outputlocation"
@@ -85,12 +89,16 @@ else
     # Pass 2: Generate HTML from fixed JSON
     gcovr -a "$outputlocation/coverage-fixed.json" \
         --html-nested \
+        --no-html-self-contained \
         --html-template-dir=../templates/html \
         --html-title "$REPONAME" \
         --html \
         --output "$outputlocation/index.html" \
         --json-summary-pretty \
         --json-summary "$outputlocation/summary.json"
+
+    # Copy font files to output directory
+    cp ../templates/html/*.woff2 "$outputlocation/"
 
     # Generate tree.json for sidebar navigation
     python3 "../scripts/build_tree.py" "$outputlocation"
