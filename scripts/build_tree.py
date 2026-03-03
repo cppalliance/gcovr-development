@@ -183,7 +183,7 @@ def build_tree(output_dir):
 def inject_tree_data(output_dir, tree):
     """Inject tree data as JavaScript variable into all HTML files."""
     output_path = Path(output_dir)
-    tree_script = f'<script>window.GCOVR_TREE_DATA={json.dumps(tree)};</script>'
+    tree_script = f'<script id="gcovr-tree-data">window.GCOVR_TREE_DATA={json.dumps(tree)};</script>'
 
     count = 0
     for html_file in output_path.glob('*.html'):
@@ -193,13 +193,18 @@ def inject_tree_data(output_dir, tree):
 
             original = content
 
-            # Replace existing tree data if present
-            if 'window.GCOVR_TREE_DATA=' in content:
+            if '<script id="gcovr-tree-data">' in content:
+                # Replace existing tagged block (handles multi-line content)
                 content = re.sub(
-                    r'<script>window\.GCOVR_TREE_DATA=.*?;</script>',
-                    tree_script, content)
+                    r'<script id="gcovr-tree-data">.*?</script>',
+                    tree_script, content, flags=re.DOTALL)
+            elif 'window.GCOVR_TREE_DATA' in content:
+                # Backward compat: replace old-style untagged injection
+                content = re.sub(
+                    r'<script>\s*window\.GCOVR_TREE_DATA\s*=\s*.*?;\s*</script>',
+                    tree_script, content, flags=re.DOTALL)
             elif '</body>' in content:
-                # Inject before </body> if not present
+                # First-time injection
                 content = content.replace('</body>', f'{tree_script}\n</body>')
 
             if content != original:
