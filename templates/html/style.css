@@ -2026,6 +2026,76 @@ tr.source-line.nav-highlight > td {
   height: 18px;
 }
 
+/* Settings button - hidden on desktop, shown on mobile */
+.settings-btn {
+  display: none;
+  width: 36px;
+  height: 36px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  transition: all var(--transition-fast);
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.settings-btn:hover {
+  background: var(--bg-hover);
+  color: var(--text-primary);
+}
+
+.settings-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.settings-dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  right: 12px;
+  margin-top: 4px;
+  padding: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  z-index: 100;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.settings-dropdown.open {
+  display: flex;
+}
+
+.settings-dropdown .view-toggle {
+  width: 100%;
+}
+
+.settings-dropdown .theme-toggle {
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+}
+
+.settings-dropdown svg {
+  width: 14px;
+  height: 14px;
+}
+
+.settings-dropdown .theme-toggle::before {
+  content: "Theme";
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+}
+
 /* Sidebar backdrop for mobile */
 .sidebar-backdrop {
   position: fixed;
@@ -2072,6 +2142,17 @@ tr.source-line.nav-highlight > td {
   /* Show hamburger menu button */
   .mobile-menu-btn {
     display: flex;
+  }
+
+  /* Show settings gear button */
+  .settings-btn {
+    display: flex;
+  }
+
+  /* Hide view-toggle and theme-toggle in header (moved to dropdown by JS) */
+  .main-header > .view-toggle,
+  .main-header > .theme-toggle {
+    display: none;
   }
 
   /* Hide sidebar toggle (pin) button and resize handle */
@@ -2304,18 +2385,20 @@ tr.source-line.nav-highlight > td {
   color: #ffffff;
 }
 
-/* Flat mode: hide sidebar, full-width main content */
-.app-container.flat-mode .sidebar,
-.early-flat-mode .sidebar {
-  display: none;
-}
+/* Flat mode: hide sidebar on desktop, full-width main content */
+@media (min-width: 1025px) {
+  .app-container.flat-mode .sidebar,
+  .early-flat-mode .sidebar {
+    display: none;
+  }
 
-.app-container.flat-mode .sidebar-backdrop,
-.early-flat-mode .sidebar-backdrop {
-  display: none;
-}
+  .app-container.flat-mode .sidebar-backdrop,
+  .early-flat-mode .sidebar-backdrop {
+    display: none;
+  }
 
-.app-container.flat-mode .main-content,
-.early-flat-mode .main-content {
-  margin-left: 12px !important;
+  .app-container.flat-mode .main-content,
+  .early-flat-mode .main-content {
+    margin-left: 12px !important;
+  }
 }
