@@ -1083,6 +1083,38 @@ body.sidebar-resizing .main-content {
   display: flex;
   gap: 16px;
   flex-wrap: wrap;
+  align-items: center;
+}
+
+.coverage-legend .legend-separator {
+  width: 1px;
+  height: 14px;
+  background: var(--border-color);
+}
+
+.coverage-legend .legend-functions-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+  padding-left: 0;
+}
+
+.coverage-legend .legend-functions-link:hover {
+  color: var(--brand-gold);
+}
+
+.fx-icon {
+  font-family: "Times New Roman", Georgia, serif;
+  font-size: 14px;
+  letter-spacing: -0.5px;
+}
+
+.fx-icon i {
+  font-style: italic;
+  font-weight: 700;
 }
 
 .legend-item {
