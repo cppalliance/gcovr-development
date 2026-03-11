@@ -1115,28 +1115,35 @@
       }, true); // capture phase to beat initSorting
     });
 
-    // --- Initialize ---
-    // Restore highlight key before first render so it applies immediately
-    var savedClicked = sessionStorage.getItem('gcovr-functions-clicked');
-    if (savedClicked !== null) {
-      sessionStorage.removeItem('gcovr-functions-clicked');
-      highlightKey = savedClicked;
+    // --- Restore saved state (scroll + highlight) ---
+    function restoreSavedState() {
+      var saved = sessionStorage.getItem('gcovr-functions-clicked');
+      if (saved !== null) {
+        sessionStorage.removeItem('gcovr-functions-clicked');
+        highlightKey = saved;
+      }
+      var scroll = sessionStorage.getItem('gcovr-functions-scrollTop');
+      if (scroll !== null) {
+        sessionStorage.removeItem('gcovr-functions-scrollTop');
+        container.scrollTop = parseInt(scroll, 10);
+      }
+      if (saved !== null || scroll !== null) {
+        lastStartIdx = -1;
+        renderVisible();
+      }
     }
 
-    // Sort by name ascending initially
+    // --- Initialize ---
     data.sort(function(a, b) { return a.name.localeCompare(b.name); });
 
     setupVirtualScroll();
     renderVisible();
+    restoreSavedState();
 
-    // Restore scroll position if returning via back button
-    var savedScroll = sessionStorage.getItem('gcovr-functions-scrollTop');
-    if (savedScroll !== null) {
-      sessionStorage.removeItem('gcovr-functions-scrollTop');
-      container.scrollTop = parseInt(savedScroll, 10);
-      lastStartIdx = -1;
-      renderVisible();
-    }
+    // Also restore on bfcache navigation (browser Back button)
+    window.addEventListener('pageshow', function(e) {
+      if (e.persisted) restoreSavedState();
+    });
 
     // Mark functions page so initSorting can skip it
     container.dataset.virtualScroll = 'true';
