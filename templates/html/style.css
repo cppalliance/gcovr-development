@@ -2247,7 +2247,7 @@ tr.source-line.nav-highlight > td {
 
 .functions-header {
   display: grid;
-  grid-template-columns: 1fr 90px 70px{% if SHOW_CALLS %} 90px{% endif %};
+  grid-template-columns: 1fr 90px 70px 90px{% if SHOW_CALLS %} 90px{% endif %};
   gap: 0;
   padding: 0 16px;
   background: var(--bg-tertiary);
@@ -2291,12 +2291,17 @@ tr.source-line.nav-highlight > td {
 
 .function-row {
   display: grid;
-  grid-template-columns: 1fr 90px 70px{% if SHOW_CALLS %} 90px{% endif %};
+  grid-template-columns: 1fr 90px 70px 90px{% if SHOW_CALLS %} 90px{% endif %};
   gap: 0;
   padding: 0 16px;
   border-bottom: 1px solid var(--border-muted);
   align-items: stretch;
   transition: background var(--transition-fast);
+}
+
+.functions-container.no-branches .functions-header,
+.functions-container.no-branches .function-row {
+  grid-template-columns: 1fr 90px 70px{% if SHOW_CALLS %} 90px{% endif %};
 }
 
 .function-row > div:not(:first-child) {
