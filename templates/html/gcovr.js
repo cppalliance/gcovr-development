@@ -2050,8 +2050,12 @@
     } catch (e) {}
 
     // Apply saved hidden columns
+    var fnList = document.querySelector('.source-functions-list');
     for (var i = 0; i < hidden.length; i++) {
       table.classList.add('hide-col-' + hidden[i]);
+      if (fnList) {
+        fnList.classList.add('hide-col-' + hidden[i]);
+      }
     }
 
     // Update button appearance to match state
@@ -2069,6 +2073,12 @@
         var hideClass = 'hide-col-' + col;
         var isHidden = table.classList.toggle(hideClass);
         this.classList.toggle('show-col', !isHidden);
+
+        // Sync with function list sidebar
+        var fnList = document.querySelector('.source-functions-list');
+        if (fnList) {
+          fnList.classList.toggle(hideClass, isHidden);
+        }
 
         // Save state
         var current = [];
