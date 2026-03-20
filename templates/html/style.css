@@ -233,7 +233,7 @@ html.no-transitions body {
 body, .sidebar, .main-content, .main-header, .main-footer,
 .sidebar-header, .sidebar-nav,
 .summary-card, .file-list-container, .source-container,
-.tree-item-header, .coverage-badge, .tree-coverage,
+.tree-item-header,
 .btn, .nav-link, input {
   transition: background-color 0.25s ease, border-color 0.25s ease, color 0.25s ease;
 }
@@ -661,25 +661,6 @@ body.sidebar-resizing .main-content {
   gap: 8px;
 }
 
-.coverage-badge {
-  padding: 4px 10px;
-  border-radius: var(--radius-sm);
-  font-weight: 600;
-  font-size: var(--font-size-sm);
-}
-
-.coverage-badge.coverage-high {
-  background: var(--coverage-high-bg);
-}
-
-.coverage-badge.coverage-medium {
-  background: var(--coverage-medium-bg);
-}
-
-.coverage-badge.coverage-low {
-  background: var(--coverage-low-bg);
-}
-
 .coverage-label {
   color: var(--text-secondary);
   font-size: var(--font-size-xs);
@@ -839,25 +820,6 @@ body.sidebar-resizing .main-content {
   color: var(--text-primary);
 }
 
-.tree-coverage {
-  font-size: var(--font-size-xs);
-  font-weight: 600;
-  padding: 2px 6px;
-  border-radius: var(--radius-sm);
-  flex-shrink: 0;
-}
-
-.tree-coverage.coverage-high {
-  background: var(--coverage-high-bg);
-}
-
-.tree-coverage.coverage-medium {
-  background: var(--coverage-medium-bg);
-}
-
-.tree-coverage.coverage-low {
-  background: var(--coverage-low-bg);
-}
 
 .tree-children {
   display: none;
